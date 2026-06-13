@@ -179,7 +179,8 @@ Syarat masuk M1: seluruh failure pada readiness review ditutup dan commit M0 ter
 (tempel output readelf -h build/smoke/freestanding.o di sini)
 
 ### Commit hash
-(tempel output git log --oneline -n 3 di sini)
+43aaaed M0: initialize reproducible OS development baseline
+43aaaed6c93b7e7b4ed4acf5e87f114903581b5d	
 
 ## 13. Referensi
 [1] Microsoft, "How to install Linux on Windows with WSL," Microsoft Learn. Accessed: Jun 2026. [Online]. Available: https://learn.microsoft.com/en-us/windows/wsl/install
