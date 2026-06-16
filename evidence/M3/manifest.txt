@@ -1,0 +1,14 @@
+# M3 evidence manifest
+generated_utc=2026-06-16T16:23:52Z
+commit=cb86919589ad7521bf736d6ad3e0c8ee6bb20fc7
+clang=Ubuntu clang version 21.1.8 (6ubuntu1)
+lld=Ubuntu LLD 21.1.8 (compatible with GNU linkers)
+qemu=QEMU emulator version 10.2.1 (Debian 1:10.2.1+ds-1ubuntu3)
+kernel.disasm.txt
+kernel.elf
+kernel.map
+kernel.readelf.header.txt
+kernel.readelf.programs.txt
+kernel.syms.txt
+m3_serial.log
+manifest.txt

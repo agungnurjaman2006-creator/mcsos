@@ -1,16 +1,33 @@
-void serial_init(void);
-void serial_write(const char *s);
+#include <stdint.h>
+#include <mcsos/arch/cpu.h>
+#include <mcsos/kernel/log.h>
+#include <mcsos/kernel/panic.h>
+#include <mcsos/kernel/version.h>
 
-__attribute__((noreturn)) static void halt_forever(void) {
-    for (;;) {
-        __asm__ volatile ("cli; hlt" : : : "memory");
-    }
+extern char __kernel_start[];
+extern char __kernel_end[];
+
+static void m3_selftest(void) {
+    KERNEL_ASSERT(__kernel_end > __kernel_start);
+    KERNEL_ASSERT(sizeof(uintptr_t) == 8u);
+    log_writeln("[M3] selftest: basic invariants passed");
 }
 
 void kmain(void) {
-    serial_init();
-    serial_write("MCSOS 260502 M2 boot path entered\n");
-    serial_write("[M2] early serial online\n");
-    serial_write("[M2] kernel reached controlled halt loop\n");
-    halt_forever();
+    log_init();
+    log_write(MCSOS_NAME); log_write(" ");
+    log_write(MCSOS_VERSION); log_write(" ");
+    log_write(MCSOS_MILESTONE);
+    log_writeln(" kernel entered");
+    log_key_value_hex64("kernel_start", (uint64_t)(uintptr_t)__kernel_start);
+    log_key_value_hex64("kernel_end",   (uint64_t)(uintptr_t)__kernel_end);
+    log_key_value_hex64("rflags", cpu_read_rflags());
+    m3_selftest();
+#ifdef MCSOS_M3_TRIGGER_PANIC
+    KERNEL_PANIC("intentional M3 panic test", 0x4D43534F533033u);
+#else
+    log_writeln("[M3] panic path installed; intentional panic disabled");
+    log_writeln("[M3] ready for QEMU smoke test and GDB audit");
+    cpu_halt_forever();
+#endif
 }

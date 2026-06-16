@@ -2,7 +2,8 @@
 #include <stddef.h>
 #include <mcsos/arch/io.h>
 
-#define COM1_PORT 0x3F8u
+#define COM1_PORT          0x3F8u
+#define SERIAL_TIMEOUT_LIMIT 100000u
 
 static int serial_transmit_empty(void) {
     return (inb((uint16_t)(COM1_PORT + 5u)) & 0x20u) != 0;
@@ -19,18 +20,15 @@ void serial_init(void) {
 }
 
 void serial_putc(char c) {
-    if (c == '\n') {
-        serial_putc('\r');
+    uint32_t spin = 0u;
+    if (c == '\n') { serial_putc('\r'); }
+    while (!serial_transmit_empty()) {
+        if (++spin >= SERIAL_TIMEOUT_LIMIT) { return; }
     }
-    while (!serial_transmit_empty()) { }
     outb((uint16_t)COM1_PORT, (uint8_t)c);
 }
 
 void serial_write(const char *s) {
-    if (s == (const char *)0) {
-        return;
-    }
-    while (*s != '\0') {
-        serial_putc(*s++);
-    }
+    if (s == (const char *)0) { return; }
+    while (*s != '\0') { serial_putc(*s++); }
 }

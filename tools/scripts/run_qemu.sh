@@ -73,8 +73,8 @@ if [ ! -s "$LOG" ]; then
     exit 1
 fi
 
-grep -q 'MCSOS 260502 M2 boot path entered' "$LOG"
-grep -q '\[M2\] early serial online' "$LOG"
-grep -q '\[M2\] kernel reached controlled halt loop' "$LOG"
+grep -q 'MCSOS 260502 M3 kernel entered' "$LOG"
+grep -q '[M3] selftest: basic invariants passed' "$LOG"
+grep -q '[M3] ready for QEMU smoke test and GDB audit' "$LOG"
 
 echo "OK: QEMU serial log valid: $LOG"
