@@ -1,0 +1,11 @@
+limine: Loading executable `boot():/boot/kernel.elf`...
+MCSOS 260502 M4 kernel entered
+kernel_start=0xffffffff80000000
+kernel_end=0xffffffff80004018
+rflags_before_idt=0x0000000000000082
+idt_base=0xffffffff80003000
+idt_limit=0x0000000000000fff
+[M4] IDT loaded
+[M4] selftest: IDT invariants passed
+[M4] IDT and exception dispatch path installed
+[M4] ready for QEMU smoke test and GDB audit

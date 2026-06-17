@@ -1,0 +1,24 @@
+limine: Loading executable `boot():/boot/kernel.elf`...
+MCSOS 260502 M4 kernel entered
+kernel_start=0xffffffff80000000
+kernel_end=0xffffffff80004018
+rflags_before_idt=0x0000000000000082
+idt_base=0xffffffff80003000
+idt_limit=0x0000000000000fff
+[M4] IDT loaded
+[M4] selftest: IDT invariants passed
+[M4] triggering intentional breakpoint exception
+[M4] trap dispatch: #BP Breakpoint
+trap_vector=0x0000000000000003
+trap_error=0x0000000000000000
+trap_rip=0xffffffff80000205
+trap_cs=0x0000000000000028
+trap_rflags=0x0000000000000082
+trap_rax=0x000000000000000a
+trap_rbx=0x0000000000000000
+trap_rcx=0xffffffff800003f8
+trap_rdx=0x00000000000003f8
+[M4] breakpoint handled; returning with iretq
+[M4] returned from breakpoint handler
+[M4] IDT and exception dispatch path installed
+[M4] ready for QEMU smoke test and GDB audit
