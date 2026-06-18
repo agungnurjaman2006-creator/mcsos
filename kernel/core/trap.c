@@ -1,5 +1,7 @@
 #include <stdint.h>
 #include <mcsos/arch/idt.h>
+#include <mcsos/arch/pic.h>
+#include <mcsos/arch/pit.h>
 #include <mcsos/kernel/log.h>
 #include <mcsos/kernel/panic.h>
 
@@ -42,6 +44,7 @@ static uint64_t trap_count;
 
 static const char *trap_name(uint64_t vector) {
     if (vector < 32u) { return exception_names[vector]; }
+    if (vector < 48u) { return "external-hardware-irq"; }
     return "external-or-user-defined-interrupt";
 }
 
@@ -59,15 +62,36 @@ static void log_trap_frame(const x86_64_trap_frame_t *frame) {
     log_key_value_hex64("trap_rdx",    frame->rdx);
 }
 
+static void handle_irq(uint64_t vector) {
+    uint8_t irq = (uint8_t)(vector - 32u);
+
+    if (irq == 0u) {
+        x86_64_timer_on_irq0();
+    } else {
+        log_write("[M5] unexpected IRQ received: ");
+        log_writeln(trap_name(vector));
+    }
+
+    x86_64_pic_send_eoi(irq);
+}
+
 void x86_64_trap_dispatch(x86_64_trap_frame_t *frame) {
     KERNEL_ASSERT(frame != (x86_64_trap_frame_t *)0);
     ++trap_count;
+
+    if (frame->vector >= 32u && frame->vector < 48u) {
+        handle_irq(frame->vector);
+        return;
+    }
+
     log_write("[M4] trap dispatch: ");
     log_writeln(trap_name(frame->vector));
     log_trap_frame(frame);
+
     if (frame->vector == 3u) {
         log_writeln("[M4] breakpoint handled; returning with iretq");
         return;
     }
+
     KERNEL_PANIC("unrecoverable CPU exception", frame->vector);
 }

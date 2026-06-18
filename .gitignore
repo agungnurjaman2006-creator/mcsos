@@ -7,3 +7,4 @@ iso_root/
 *.o
 *.d
 third_party/limine/
+limine/

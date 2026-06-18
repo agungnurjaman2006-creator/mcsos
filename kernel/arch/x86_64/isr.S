@@ -90,12 +90,28 @@ ISR_NOERR 28
 ISR_ERR   29
 ISR_ERR   30
 ISR_NOERR 31
+ISR_NOERR 32
+ISR_NOERR 33
+ISR_NOERR 34
+ISR_NOERR 35
+ISR_NOERR 36
+ISR_NOERR 37
+ISR_NOERR 38
+ISR_NOERR 39
+ISR_NOERR 40
+ISR_NOERR 41
+ISR_NOERR 42
+ISR_NOERR 43
+ISR_NOERR 44
+ISR_NOERR 45
+ISR_NOERR 46
+ISR_NOERR 47
 
 .section .rodata
-.global x86_64_exception_stubs
-.type x86_64_exception_stubs, @object
+.global x86_64_interrupt_stubs
+.type x86_64_interrupt_stubs, @object
 .align 8
-x86_64_exception_stubs:
+x86_64_interrupt_stubs:
     .quad isr_stub_0
     .quad isr_stub_1
     .quad isr_stub_2
@@ -128,4 +144,20 @@ x86_64_exception_stubs:
     .quad isr_stub_29
     .quad isr_stub_30
     .quad isr_stub_31
-.size x86_64_exception_stubs, . - x86_64_exception_stubs
+    .quad isr_stub_32
+    .quad isr_stub_33
+    .quad isr_stub_34
+    .quad isr_stub_35
+    .quad isr_stub_36
+    .quad isr_stub_37
+    .quad isr_stub_38
+    .quad isr_stub_39
+    .quad isr_stub_40
+    .quad isr_stub_41
+    .quad isr_stub_42
+    .quad isr_stub_43
+    .quad isr_stub_44
+    .quad isr_stub_45
+    .quad isr_stub_46
+    .quad isr_stub_47
+.size x86_64_interrupt_stubs, . - x86_64_interrupt_stubs

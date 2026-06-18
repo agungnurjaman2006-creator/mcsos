@@ -108,7 +108,7 @@ audit: inspect breakpoint panic
 >! $(NM) -u $(BP_KERNEL) | grep .
 >! $(NM) -u $(PANIC_KERNEL) | grep .
 >grep -q 'isr_stub_14' $(SYMS)
->grep -q 'x86_64_exception_stubs' $(SYMS)
+>grep -q 'x86_64_interrupt_stubs' $(SYMS)
 >$(READELF) -S $(KERNEL) | grep -q '.text'
 >$(READELF) -S $(KERNEL) | grep -q '.rodata'
 
