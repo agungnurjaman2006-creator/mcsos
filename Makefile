@@ -36,17 +36,14 @@ PANIC_CFLAGS := $(COMMON_CFLAGS) -DMCSOS_M4_TRIGGER_PANIC=1
 
 LDFLAGS := -nostdlib -static -z max-page-size=0x1000 -T linker.ld
 
-SRC_C := $(shell find kernel -name '*.c' | LC_ALL=C sort)
+SRC_C := $(shell find kernel src -name '*.c' | LC_ALL=C sort)
 SRC_S := $(shell find kernel -name '*.S' | LC_ALL=C sort)
 
 OBJ       := $(patsubst %.c,$(BUILD_DIR)/normal/%.o,$(SRC_C)) \
-             $(BUILD_DIR)/normal/src/pmm.o \
              $(patsubst %.S,$(BUILD_DIR)/normal/%.o,$(SRC_S))
 BP_OBJ    := $(patsubst %.c,$(BUILD_DIR)/breakpoint/%.o,$(SRC_C)) \
-             $(BUILD_DIR)/breakpoint/src/pmm.o \
              $(patsubst %.S,$(BUILD_DIR)/breakpoint/%.o,$(SRC_S))
 PANIC_OBJ := $(patsubst %.c,$(BUILD_DIR)/panic/%.o,$(SRC_C)) \
-             $(BUILD_DIR)/panic/src/pmm.o \
              $(patsubst %.S,$(BUILD_DIR)/panic/%.o,$(SRC_S))
 
 .PHONY: all build breakpoint panic inspect audit clean distclean
