@@ -22,12 +22,12 @@ COMMON_CFLAGS := --target=x86_64-unknown-none-elf -std=c17 \
     -fno-pic -fno-pie -fno-lto -m64 -march=x86-64 -mabi=sysv \
     -mno-red-zone -mno-mmx -mno-sse -mno-sse2 -mcmodel=kernel \
     -Wall -Wextra -Werror \
-    -Ikernel/arch/x86_64/include -Ikernel/include
+    -Ikernel/arch/x86_64/include -Ikernel/include -Iinclude
 
 COMMON_ASFLAGS := --target=x86_64-unknown-none-elf \
     -ffreestanding -fno-pic -fno-pie -m64 -mno-red-zone \
     -Wall -Wextra -Werror \
-    -Ikernel/arch/x86_64/include -Ikernel/include
+    -Ikernel/arch/x86_64/include -Ikernel/include -Iinclude
 
 CFLAGS       := $(COMMON_CFLAGS)
 ASFLAGS      := $(COMMON_ASFLAGS)
@@ -40,10 +40,13 @@ SRC_C := $(shell find kernel -name '*.c' | LC_ALL=C sort)
 SRC_S := $(shell find kernel -name '*.S' | LC_ALL=C sort)
 
 OBJ       := $(patsubst %.c,$(BUILD_DIR)/normal/%.o,$(SRC_C)) \
+             $(BUILD_DIR)/normal/src/pmm.o \
              $(patsubst %.S,$(BUILD_DIR)/normal/%.o,$(SRC_S))
 BP_OBJ    := $(patsubst %.c,$(BUILD_DIR)/breakpoint/%.o,$(SRC_C)) \
+             $(BUILD_DIR)/breakpoint/src/pmm.o \
              $(patsubst %.S,$(BUILD_DIR)/breakpoint/%.o,$(SRC_S))
 PANIC_OBJ := $(patsubst %.c,$(BUILD_DIR)/panic/%.o,$(SRC_C)) \
+             $(BUILD_DIR)/panic/src/pmm.o \
              $(patsubst %.S,$(BUILD_DIR)/panic/%.o,$(SRC_S))
 
 .PHONY: all build breakpoint panic inspect audit clean distclean
@@ -117,3 +120,17 @@ clean:
 
 distclean: clean
 >rm -rf iso_root limine evidence
+
+HOSTCC ?= clang
+
+build/test_pmm_host: src/pmm.c tests/test_pmm_host.c include/pmm.h include/types.h
+>mkdir -p $(BUILD_DIR)
+>$(HOSTCC) -std=c17 -Wall -Wextra -Werror -Iinclude src/pmm.c tests/test_pmm_host.c -o build/test_pmm_host
+
+check-m6: build/test_pmm_host
+>./build/test_pmm_host
+>$(NM) -u $(BUILD_DIR)/normal/src/pmm.o | tee $(BUILD_DIR)/pmm.undefined.txt
+>test ! -s $(BUILD_DIR)/pmm.undefined.txt
+>$(OBJDUMP) -dr $(BUILD_DIR)/normal/src/pmm.o > $(BUILD_DIR)/pmm.objdump.txt
+
+.PHONY: check-m6
