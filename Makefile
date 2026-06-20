@@ -134,3 +134,24 @@ check-m6: build/test_pmm_host
 >$(OBJDUMP) -dr $(BUILD_DIR)/normal/src/pmm.o > $(BUILD_DIR)/pmm.objdump.txt
 
 .PHONY: check-m6
+
+# --- M7 VMM targets ---
+HOST_CFLAGS := -std=c17 -Wall -Wextra -Werror -DMCSOS_HOST_TEST -Iinclude
+VMM_CFLAGS  := --target=x86_64-unknown-none-elf -std=c17 -Wall -Wextra -Werror \
+    -ffreestanding -fno-builtin -fno-stack-protector -mno-red-zone -Iinclude
+
+$(BUILD_DIR)/vmm.o: src/vmm.c include/vmm.h include/types.h
+>mkdir -p $(BUILD_DIR)
+>$(CC) $(VMM_CFLAGS) -c src/vmm.c -o $(BUILD_DIR)/vmm.o
+
+$(BUILD_DIR)/test_vmm_host: src/vmm.c tests/test_vmm_host.c include/vmm.h include/types.h
+>mkdir -p $(BUILD_DIR)
+>$(HOSTCC) $(HOST_CFLAGS) src/vmm.c tests/test_vmm_host.c -o $(BUILD_DIR)/test_vmm_host
+
+check: $(BUILD_DIR)/vmm.o $(BUILD_DIR)/test_vmm_host
+>$(BUILD_DIR)/test_vmm_host
+>$(NM) -u $(BUILD_DIR)/vmm.o
+>$(OBJDUMP) -dr $(BUILD_DIR)/vmm.o > $(BUILD_DIR)/vmm.objdump.txt
+>grep -q "invlpg" $(BUILD_DIR)/vmm.objdump.txt
+>grep -q "cr3" $(BUILD_DIR)/vmm.objdump.txt
+>@echo "[M7][PASS] make check lulus"
