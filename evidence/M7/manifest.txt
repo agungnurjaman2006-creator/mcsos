@@ -1,0 +1,13 @@
+MCSOS M7 evidence manifest
+timestamp_utc=2026-06-20T21:18:14Z
+commit=382e235ace5a1266477fbc032d780ab2d9eecb08
+clang=Ubuntu clang version 21.1.8 (6ubuntu1)
+lld=Ubuntu LLD 21.1.8 (compatible with GNU linkers)
+qemu=QEMU emulator version 10.2.1 (Debian 1:10.2.1+ds-1ubuntu3)
+m7-qemu-serial.log
+m7_make_check.log
+m7_vmm_nm_undefined.txt
+m7_vmm_objdump.txt
+m7_vmm_readelf_header.txt
+m7_vmm_readelf_sections.txt
+manifest.txt
