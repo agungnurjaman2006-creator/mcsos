@@ -1,0 +1,840 @@
+
+build/m8/kmem.freestanding.o:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+0000000000000000 <kmem_init>:
+   0:	55                   	push   %rbp
+   1:	48 89 e5             	mov    %rsp,%rbp
+   4:	48 83 ec 30          	sub    $0x30,%rsp
+   8:	48 89 7d f0          	mov    %rdi,-0x10(%rbp)
+   c:	48 89 75 e8          	mov    %rsi,-0x18(%rbp)
+  10:	48 83 7d f0 00       	cmpq   $0x0,-0x10(%rbp)
+  15:	74 07                	je     1e <kmem_init+0x1e>
+  17:	48 83 7d e8 50       	cmpq   $0x50,-0x18(%rbp)
+  1c:	73 0c                	jae    2a <kmem_init+0x2a>
+  1e:	c7 45 fc ff ff ff ff 	movl   $0xffffffff,-0x4(%rbp)
+  25:	e9 28 01 00 00       	jmp    152 <kmem_init+0x152>
+  2a:	48 8b 7d f0          	mov    -0x10(%rbp),%rdi
+  2e:	be 10 00 00 00       	mov    $0x10,%esi
+  33:	e8 28 01 00 00       	call   160 <kmem_align_up_ptr>
+  38:	48 89 45 e0          	mov    %rax,-0x20(%rbp)
+  3c:	48 83 7d e0 00       	cmpq   $0x0,-0x20(%rbp)
+  41:	74 0d                	je     50 <kmem_init+0x50>
+  43:	48 8b 45 e0          	mov    -0x20(%rbp),%rax
+  47:	48 8b 4d f0          	mov    -0x10(%rbp),%rcx
+  4b:	48 39 c8             	cmp    %rcx,%rax
+  4e:	73 0c                	jae    5c <kmem_init+0x5c>
+  50:	c7 45 fc fe ff ff ff 	movl   $0xfffffffe,-0x4(%rbp)
+  57:	e9 f6 00 00 00       	jmp    152 <kmem_init+0x152>
+  5c:	48 8b 45 e0          	mov    -0x20(%rbp),%rax
+  60:	48 8b 4d f0          	mov    -0x10(%rbp),%rcx
+  64:	48 29 c8             	sub    %rcx,%rax
+  67:	48 89 45 d8          	mov    %rax,-0x28(%rbp)
+  6b:	48 8b 45 e8          	mov    -0x18(%rbp),%rax
+  6f:	48 8b 4d d8          	mov    -0x28(%rbp),%rcx
+  73:	48 83 c1 30          	add    $0x30,%rcx
+  77:	48 83 c1 20          	add    $0x20,%rcx
+  7b:	48 39 c8             	cmp    %rcx,%rax
+  7e:	77 0c                	ja     8c <kmem_init+0x8c>
+  80:	c7 45 fc fd ff ff ff 	movl   $0xfffffffd,-0x4(%rbp)
+  87:	e9 c6 00 00 00       	jmp    152 <kmem_init+0x152>
+  8c:	48 8b 45 e8          	mov    -0x18(%rbp),%rax
+  90:	48 2b 45 d8          	sub    -0x28(%rbp),%rax
+  94:	48 89 45 d0          	mov    %rax,-0x30(%rbp)
+  98:	48 8b 45 d0          	mov    -0x30(%rbp),%rax
+  9c:	48 83 e0 f0          	and    $0xfffffffffffffff0,%rax
+  a0:	48 89 45 d0          	mov    %rax,-0x30(%rbp)
+  a4:	48 83 7d d0 50       	cmpq   $0x50,-0x30(%rbp)
+  a9:	77 0c                	ja     b7 <kmem_init+0xb7>
+  ab:	c7 45 fc fc ff ff ff 	movl   $0xfffffffc,-0x4(%rbp)
+  b2:	e9 9b 00 00 00       	jmp    152 <kmem_init+0x152>
+  b7:	48 8b 45 e0          	mov    -0x20(%rbp),%rax
+  bb:	48 89 04 25 00 00 00 	mov    %rax,0x0
+  c2:	00 
+			bf: R_X86_64_32S	.bss
+  c3:	48 8b 04 25 00 00 00 	mov    0x0,%rax
+  ca:	00 
+			c7: R_X86_64_32S	.bss
+  cb:	48 03 45 d0          	add    -0x30(%rbp),%rax
+  cf:	48 89 04 25 00 00 00 	mov    %rax,0x0
+  d6:	00 
+			d3: R_X86_64_32S	.bss+0x8
+  d7:	48 8b 04 25 00 00 00 	mov    0x0,%rax
+  de:	00 
+			db: R_X86_64_32S	.bss
+  df:	48 89 04 25 00 00 00 	mov    %rax,0x0
+  e6:	00 
+			e3: R_X86_64_32S	.bss+0x10
+  e7:	48 8b 04 25 00 00 00 	mov    0x0,%rax
+  ee:	00 
+			eb: R_X86_64_32S	.bss+0x10
+  ef:	48 b9 41 45 48 53 4f 	movabs $0x4d43534f53484541,%rcx
+  f6:	53 43 4d 
+  f9:	48 89 08             	mov    %rcx,(%rax)
+  fc:	48 8b 4d d0          	mov    -0x30(%rbp),%rcx
+ 100:	48 83 e9 30          	sub    $0x30,%rcx
+ 104:	48 8b 04 25 00 00 00 	mov    0x0,%rax
+ 10b:	00 
+			108: R_X86_64_32S	.bss+0x10
+ 10c:	48 89 48 08          	mov    %rcx,0x8(%rax)
+ 110:	48 8b 04 25 00 00 00 	mov    0x0,%rax
+ 117:	00 
+			114: R_X86_64_32S	.bss+0x10
+ 118:	c7 40 10 01 00 00 00 	movl   $0x1,0x10(%rax)
+ 11f:	48 8b 04 25 00 00 00 	mov    0x0,%rax
+ 126:	00 
+			123: R_X86_64_32S	.bss+0x10
+ 127:	48 c7 40 20 00 00 00 	movq   $0x0,0x20(%rax)
+ 12e:	00 
+ 12f:	48 8b 04 25 00 00 00 	mov    0x0,%rax
+ 136:	00 
+			133: R_X86_64_32S	.bss+0x10
+ 137:	48 c7 40 28 00 00 00 	movq   $0x0,0x28(%rax)
+ 13e:	00 
+ 13f:	c7 04 25 00 00 00 00 	movl   $0x1,0x0
+ 146:	01 00 00 00 
+			142: R_X86_64_32S	.bss+0x18
+ 14a:	e8 00 00 00 00       	call   14f <kmem_init+0x14f>
+			14b: R_X86_64_PLT32	kmem_validate-0x4
+ 14f:	89 45 fc             	mov    %eax,-0x4(%rbp)
+ 152:	8b 45 fc             	mov    -0x4(%rbp),%eax
+ 155:	48 83 c4 30          	add    $0x30,%rsp
+ 159:	5d                   	pop    %rbp
+ 15a:	c3                   	ret
+ 15b:	0f 1f 44 00 00       	nopl   0x0(%rax,%rax,1)
+
+0000000000000160 <kmem_align_up_ptr>:
+ 160:	55                   	push   %rbp
+ 161:	48 89 e5             	mov    %rsp,%rbp
+ 164:	48 83 ec 20          	sub    $0x20,%rsp
+ 168:	48 89 7d f0          	mov    %rdi,-0x10(%rbp)
+ 16c:	48 89 75 e8          	mov    %rsi,-0x18(%rbp)
+ 170:	48 8b 45 e8          	mov    -0x18(%rbp),%rax
+ 174:	48 83 e8 01          	sub    $0x1,%rax
+ 178:	48 89 45 e0          	mov    %rax,-0x20(%rbp)
+ 17c:	48 8b 45 e8          	mov    -0x18(%rbp),%rax
+ 180:	48 23 45 e0          	and    -0x20(%rbp),%rax
+ 184:	48 83 f8 00          	cmp    $0x0,%rax
+ 188:	74 0a                	je     194 <kmem_align_up_ptr+0x34>
+ 18a:	48 c7 45 f8 00 00 00 	movq   $0x0,-0x8(%rbp)
+ 191:	00 
+ 192:	eb 35                	jmp    1c9 <kmem_align_up_ptr+0x69>
+ 194:	48 8b 45 f0          	mov    -0x10(%rbp),%rax
+ 198:	48 c7 c1 ff ff ff ff 	mov    $0xffffffffffffffff,%rcx
+ 19f:	48 2b 4d e0          	sub    -0x20(%rbp),%rcx
+ 1a3:	48 39 c8             	cmp    %rcx,%rax
+ 1a6:	76 0a                	jbe    1b2 <kmem_align_up_ptr+0x52>
+ 1a8:	48 c7 45 f8 00 00 00 	movq   $0x0,-0x8(%rbp)
+ 1af:	00 
+ 1b0:	eb 17                	jmp    1c9 <kmem_align_up_ptr+0x69>
+ 1b2:	48 8b 45 f0          	mov    -0x10(%rbp),%rax
+ 1b6:	48 03 45 e0          	add    -0x20(%rbp),%rax
+ 1ba:	48 8b 4d e0          	mov    -0x20(%rbp),%rcx
+ 1be:	48 83 f1 ff          	xor    $0xffffffffffffffff,%rcx
+ 1c2:	48 21 c8             	and    %rcx,%rax
+ 1c5:	48 89 45 f8          	mov    %rax,-0x8(%rbp)
+ 1c9:	48 8b 45 f8          	mov    -0x8(%rbp),%rax
+ 1cd:	48 83 c4 20          	add    $0x20,%rsp
+ 1d1:	5d                   	pop    %rbp
+ 1d2:	c3                   	ret
+ 1d3:	66 66 66 66 2e 0f 1f 	data16 data16 data16 cs nopw 0x0(%rax,%rax,1)
+ 1da:	84 00 00 00 00 00 
+
+00000000000001e0 <kmem_validate>:
+ 1e0:	55                   	push   %rbp
+ 1e1:	48 89 e5             	mov    %rsp,%rbp
+ 1e4:	48 83 ec 40          	sub    $0x40,%rsp
+ 1e8:	83 3c 25 00 00 00 00 	cmpl   $0x0,0x0
+ 1ef:	00 
+			1eb: R_X86_64_32S	.bss+0x18
+ 1f0:	74 28                	je     21a <kmem_validate+0x3a>
+ 1f2:	48 83 3c 25 00 00 00 	cmpq   $0x0,0x0
+ 1f9:	00 00 
+			1f6: R_X86_64_32S	.bss
+ 1fb:	74 1d                	je     21a <kmem_validate+0x3a>
+ 1fd:	48 8b 04 25 00 00 00 	mov    0x0,%rax
+ 204:	00 
+			201: R_X86_64_32S	.bss+0x8
+ 205:	48 3b 04 25 00 00 00 	cmp    0x0,%rax
+ 20c:	00 
+			209: R_X86_64_32S	.bss
+ 20d:	76 0b                	jbe    21a <kmem_validate+0x3a>
+ 20f:	48 83 3c 25 00 00 00 	cmpq   $0x0,0x0
+ 216:	00 00 
+			213: R_X86_64_32S	.bss+0x10
+ 218:	75 0c                	jne    226 <kmem_validate+0x46>
+ 21a:	c7 45 fc ff ff ff ff 	movl   $0xffffffff,-0x4(%rbp)
+ 221:	e9 8e 01 00 00       	jmp    3b4 <kmem_validate+0x1d4>
+ 226:	48 8b 04 25 00 00 00 	mov    0x0,%rax
+ 22d:	00 
+			22a: R_X86_64_32S	.bss+0x10
+ 22e:	48 3b 04 25 00 00 00 	cmp    0x0,%rax
+ 235:	00 
+			232: R_X86_64_32S	.bss
+ 236:	74 0c                	je     244 <kmem_validate+0x64>
+ 238:	c7 45 fc fe ff ff ff 	movl   $0xfffffffe,-0x4(%rbp)
+ 23f:	e9 70 01 00 00       	jmp    3b4 <kmem_validate+0x1d4>
+ 244:	48 c7 45 f0 00 00 00 	movq   $0x0,-0x10(%rbp)
+ 24b:	00 
+ 24c:	48 8b 04 25 00 00 00 	mov    0x0,%rax
+ 253:	00 
+			250: R_X86_64_32S	.bss
+ 254:	48 89 45 e8          	mov    %rax,-0x18(%rbp)
+ 258:	48 c7 45 e0 00 00 00 	movq   $0x0,-0x20(%rbp)
+ 25f:	00 
+ 260:	48 8b 04 25 00 00 00 	mov    0x0,%rax
+ 267:	00 
+			264: R_X86_64_32S	.bss+0x10
+ 268:	48 89 45 d8          	mov    %rax,-0x28(%rbp)
+ 26c:	48 83 7d d8 00       	cmpq   $0x0,-0x28(%rbp)
+ 271:	0f 84 36 01 00 00    	je     3ad <kmem_validate+0x1cd>
+ 277:	48 8b 45 e0          	mov    -0x20(%rbp),%rax
+ 27b:	48 83 c0 01          	add    $0x1,%rax
+ 27f:	48 89 45 e0          	mov    %rax,-0x20(%rbp)
+ 283:	48 3d 00 00 10 00    	cmp    $0x100000,%rax
+ 289:	76 0c                	jbe    297 <kmem_validate+0xb7>
+ 28b:	c7 45 fc fd ff ff ff 	movl   $0xfffffffd,-0x4(%rbp)
+ 292:	e9 1d 01 00 00       	jmp    3b4 <kmem_validate+0x1d4>
+ 297:	48 8b 45 d8          	mov    -0x28(%rbp),%rax
+ 29b:	48 3b 45 e8          	cmp    -0x18(%rbp),%rax
+ 29f:	74 0c                	je     2ad <kmem_validate+0xcd>
+ 2a1:	c7 45 fc fc ff ff ff 	movl   $0xfffffffc,-0x4(%rbp)
+ 2a8:	e9 07 01 00 00       	jmp    3b4 <kmem_validate+0x1d4>
+ 2ad:	48 8b 45 d8          	mov    -0x28(%rbp),%rax
+ 2b1:	48 3b 04 25 00 00 00 	cmp    0x0,%rax
+ 2b8:	00 
+			2b5: R_X86_64_32S	.bss
+ 2b9:	72 12                	jb     2cd <kmem_validate+0xed>
+ 2bb:	48 8b 45 d8          	mov    -0x28(%rbp),%rax
+ 2bf:	48 83 c0 30          	add    $0x30,%rax
+ 2c3:	48 3b 04 25 00 00 00 	cmp    0x0,%rax
+ 2ca:	00 
+			2c7: R_X86_64_32S	.bss+0x8
+ 2cb:	76 0c                	jbe    2d9 <kmem_validate+0xf9>
+ 2cd:	c7 45 fc fb ff ff ff 	movl   $0xfffffffb,-0x4(%rbp)
+ 2d4:	e9 db 00 00 00       	jmp    3b4 <kmem_validate+0x1d4>
+ 2d9:	48 8b 45 d8          	mov    -0x28(%rbp),%rax
+ 2dd:	48 b9 41 45 48 53 4f 	movabs $0x4d43534f53484541,%rcx
+ 2e4:	53 43 4d 
+ 2e7:	48 39 08             	cmp    %rcx,(%rax)
+ 2ea:	74 0c                	je     2f8 <kmem_validate+0x118>
+ 2ec:	c7 45 fc fa ff ff ff 	movl   $0xfffffffa,-0x4(%rbp)
+ 2f3:	e9 bc 00 00 00       	jmp    3b4 <kmem_validate+0x1d4>
+ 2f8:	48 8b 45 d8          	mov    -0x28(%rbp),%rax
+ 2fc:	48 8b 40 20          	mov    0x20(%rax),%rax
+ 300:	48 3b 45 f0          	cmp    -0x10(%rbp),%rax
+ 304:	74 0c                	je     312 <kmem_validate+0x132>
+ 306:	c7 45 fc f9 ff ff ff 	movl   $0xfffffff9,-0x4(%rbp)
+ 30d:	e9 a2 00 00 00       	jmp    3b4 <kmem_validate+0x1d4>
+ 312:	48 8b 45 d8          	mov    -0x28(%rbp),%rax
+ 316:	48 8b 40 08          	mov    0x8(%rax),%rax
+ 31a:	48 89 45 d0          	mov    %rax,-0x30(%rbp)
+ 31e:	48 8b 04 25 00 00 00 	mov    0x0,%rax
+ 325:	00 
+			322: R_X86_64_32S	.bss+0x8
+ 326:	48 89 45 c8          	mov    %rax,-0x38(%rbp)
+ 32a:	48 8b 7d d8          	mov    -0x28(%rbp),%rdi
+ 32e:	e8 7d 03 00 00       	call   6b0 <kmem_payload>
+ 333:	48 8b 4d c8          	mov    -0x38(%rbp),%rcx
+ 337:	48 89 c2             	mov    %rax,%rdx
+ 33a:	48 8b 45 d0          	mov    -0x30(%rbp),%rax
+ 33e:	48 29 d1             	sub    %rdx,%rcx
+ 341:	48 39 c8             	cmp    %rcx,%rax
+ 344:	76 09                	jbe    34f <kmem_validate+0x16f>
+ 346:	c7 45 fc f8 ff ff ff 	movl   $0xfffffff8,-0x4(%rbp)
+ 34d:	eb 65                	jmp    3b4 <kmem_validate+0x1d4>
+ 34f:	48 8b 7d d8          	mov    -0x28(%rbp),%rdi
+ 353:	e8 58 03 00 00       	call   6b0 <kmem_payload>
+ 358:	48 8b 4d d8          	mov    -0x28(%rbp),%rcx
+ 35c:	48 03 41 08          	add    0x8(%rcx),%rax
+ 360:	48 89 45 e8          	mov    %rax,-0x18(%rbp)
+ 364:	48 8b 7d e8          	mov    -0x18(%rbp),%rdi
+ 368:	be 10 00 00 00       	mov    $0x10,%esi
+ 36d:	e8 ee fd ff ff       	call   160 <kmem_align_up_ptr>
+ 372:	48 89 45 e8          	mov    %rax,-0x18(%rbp)
+ 376:	48 83 7d e8 00       	cmpq   $0x0,-0x18(%rbp)
+ 37b:	74 0e                	je     38b <kmem_validate+0x1ab>
+ 37d:	48 8b 45 e8          	mov    -0x18(%rbp),%rax
+ 381:	48 3b 04 25 00 00 00 	cmp    0x0,%rax
+ 388:	00 
+			385: R_X86_64_32S	.bss+0x8
+ 389:	76 09                	jbe    394 <kmem_validate+0x1b4>
+ 38b:	c7 45 fc f7 ff ff ff 	movl   $0xfffffff7,-0x4(%rbp)
+ 392:	eb 20                	jmp    3b4 <kmem_validate+0x1d4>
+ 394:	48 8b 45 d8          	mov    -0x28(%rbp),%rax
+ 398:	48 89 45 f0          	mov    %rax,-0x10(%rbp)
+ 39c:	48 8b 45 d8          	mov    -0x28(%rbp),%rax
+ 3a0:	48 8b 40 28          	mov    0x28(%rax),%rax
+ 3a4:	48 89 45 d8          	mov    %rax,-0x28(%rbp)
+ 3a8:	e9 bf fe ff ff       	jmp    26c <kmem_validate+0x8c>
+ 3ad:	c7 45 fc 00 00 00 00 	movl   $0x0,-0x4(%rbp)
+ 3b4:	8b 45 fc             	mov    -0x4(%rbp),%eax
+ 3b7:	48 83 c4 40          	add    $0x40,%rsp
+ 3bb:	5d                   	pop    %rbp
+ 3bc:	c3                   	ret
+ 3bd:	0f 1f 00             	nopl   (%rax)
+
+00000000000003c0 <kmem_alloc>:
+ 3c0:	55                   	push   %rbp
+ 3c1:	48 89 e5             	mov    %rsp,%rbp
+ 3c4:	48 83 ec 20          	sub    $0x20,%rsp
+ 3c8:	48 89 7d f0          	mov    %rdi,-0x10(%rbp)
+ 3cc:	83 3c 25 00 00 00 00 	cmpl   $0x0,0x0
+ 3d3:	00 
+			3cf: R_X86_64_32S	.bss+0x18
+ 3d4:	74 07                	je     3dd <kmem_alloc+0x1d>
+ 3d6:	48 83 7d f0 00       	cmpq   $0x0,-0x10(%rbp)
+ 3db:	75 0d                	jne    3ea <kmem_alloc+0x2a>
+ 3dd:	48 c7 45 f8 00 00 00 	movq   $0x0,-0x8(%rbp)
+ 3e4:	00 
+ 3e5:	e9 ad 00 00 00       	jmp    497 <kmem_alloc+0xd7>
+ 3ea:	48 8b 7d f0          	mov    -0x10(%rbp),%rdi
+ 3ee:	be 10 00 00 00       	mov    $0x10,%esi
+ 3f3:	e8 b8 00 00 00       	call   4b0 <kmem_align_up_size>
+ 3f8:	48 89 45 e8          	mov    %rax,-0x18(%rbp)
+ 3fc:	48 83 7d e8 00       	cmpq   $0x0,-0x18(%rbp)
+ 401:	75 0d                	jne    410 <kmem_alloc+0x50>
+ 403:	48 c7 45 f8 00 00 00 	movq   $0x0,-0x8(%rbp)
+ 40a:	00 
+ 40b:	e9 87 00 00 00       	jmp    497 <kmem_alloc+0xd7>
+ 410:	48 8b 04 25 00 00 00 	mov    0x0,%rax
+ 417:	00 
+			414: R_X86_64_32S	.bss+0x10
+ 418:	48 89 45 e0          	mov    %rax,-0x20(%rbp)
+ 41c:	48 83 7d e0 00       	cmpq   $0x0,-0x20(%rbp)
+ 421:	74 6c                	je     48f <kmem_alloc+0xcf>
+ 423:	48 8b 45 e0          	mov    -0x20(%rbp),%rax
+ 427:	48 b9 41 45 48 53 4f 	movabs $0x4d43534f53484541,%rcx
+ 42e:	53 43 4d 
+ 431:	48 39 08             	cmp    %rcx,(%rax)
+ 434:	74 0a                	je     440 <kmem_alloc+0x80>
+ 436:	48 c7 45 f8 00 00 00 	movq   $0x0,-0x8(%rbp)
+ 43d:	00 
+ 43e:	eb 57                	jmp    497 <kmem_alloc+0xd7>
+ 440:	48 8b 45 e0          	mov    -0x20(%rbp),%rax
+ 444:	83 78 10 00          	cmpl   $0x0,0x10(%rax)
+ 448:	74 35                	je     47f <kmem_alloc+0xbf>
+ 44a:	48 8b 45 e0          	mov    -0x20(%rbp),%rax
+ 44e:	48 8b 40 08          	mov    0x8(%rax),%rax
+ 452:	48 3b 45 e8          	cmp    -0x18(%rbp),%rax
+ 456:	72 27                	jb     47f <kmem_alloc+0xbf>
+ 458:	48 8b 7d e0          	mov    -0x20(%rbp),%rdi
+ 45c:	48 8b 75 e8          	mov    -0x18(%rbp),%rsi
+ 460:	e8 db 00 00 00       	call   540 <kmem_split_if_useful>
+ 465:	48 8b 45 e0          	mov    -0x20(%rbp),%rax
+ 469:	c7 40 10 00 00 00 00 	movl   $0x0,0x10(%rax)
+ 470:	48 8b 7d e0          	mov    -0x20(%rbp),%rdi
+ 474:	e8 37 02 00 00       	call   6b0 <kmem_payload>
+ 479:	48 89 45 f8          	mov    %rax,-0x8(%rbp)
+ 47d:	eb 18                	jmp    497 <kmem_alloc+0xd7>
+ 47f:	eb 00                	jmp    481 <kmem_alloc+0xc1>
+ 481:	48 8b 45 e0          	mov    -0x20(%rbp),%rax
+ 485:	48 8b 40 28          	mov    0x28(%rax),%rax
+ 489:	48 89 45 e0          	mov    %rax,-0x20(%rbp)
+ 48d:	eb 8d                	jmp    41c <kmem_alloc+0x5c>
+ 48f:	48 c7 45 f8 00 00 00 	movq   $0x0,-0x8(%rbp)
+ 496:	00 
+ 497:	48 8b 45 f8          	mov    -0x8(%rbp),%rax
+ 49b:	48 83 c4 20          	add    $0x20,%rsp
+ 49f:	5d                   	pop    %rbp
+ 4a0:	c3                   	ret
+ 4a1:	66 66 66 66 66 66 2e 	data16 data16 data16 data16 data16 cs nopw 0x0(%rax,%rax,1)
+ 4a8:	0f 1f 84 00 00 00 00 
+ 4af:	00 
+
+00000000000004b0 <kmem_align_up_size>:
+ 4b0:	55                   	push   %rbp
+ 4b1:	48 89 e5             	mov    %rsp,%rbp
+ 4b4:	48 83 ec 20          	sub    $0x20,%rsp
+ 4b8:	48 89 7d f0          	mov    %rdi,-0x10(%rbp)
+ 4bc:	48 89 75 e8          	mov    %rsi,-0x18(%rbp)
+ 4c0:	48 83 7d e8 00       	cmpq   $0x0,-0x18(%rbp)
+ 4c5:	75 0a                	jne    4d1 <kmem_align_up_size+0x21>
+ 4c7:	48 8b 45 f0          	mov    -0x10(%rbp),%rax
+ 4cb:	48 89 45 f8          	mov    %rax,-0x8(%rbp)
+ 4cf:	eb 59                	jmp    52a <kmem_align_up_size+0x7a>
+ 4d1:	48 8b 45 e8          	mov    -0x18(%rbp),%rax
+ 4d5:	48 83 e8 01          	sub    $0x1,%rax
+ 4d9:	48 89 45 e0          	mov    %rax,-0x20(%rbp)
+ 4dd:	48 8b 45 e8          	mov    -0x18(%rbp),%rax
+ 4e1:	48 23 45 e0          	and    -0x20(%rbp),%rax
+ 4e5:	48 83 f8 00          	cmp    $0x0,%rax
+ 4e9:	74 0a                	je     4f5 <kmem_align_up_size+0x45>
+ 4eb:	48 c7 45 f8 00 00 00 	movq   $0x0,-0x8(%rbp)
+ 4f2:	00 
+ 4f3:	eb 35                	jmp    52a <kmem_align_up_size+0x7a>
+ 4f5:	48 8b 45 f0          	mov    -0x10(%rbp),%rax
+ 4f9:	48 c7 c1 ff ff ff ff 	mov    $0xffffffffffffffff,%rcx
+ 500:	48 2b 4d e0          	sub    -0x20(%rbp),%rcx
+ 504:	48 39 c8             	cmp    %rcx,%rax
+ 507:	76 0a                	jbe    513 <kmem_align_up_size+0x63>
+ 509:	48 c7 45 f8 00 00 00 	movq   $0x0,-0x8(%rbp)
+ 510:	00 
+ 511:	eb 17                	jmp    52a <kmem_align_up_size+0x7a>
+ 513:	48 8b 45 f0          	mov    -0x10(%rbp),%rax
+ 517:	48 03 45 e0          	add    -0x20(%rbp),%rax
+ 51b:	48 8b 4d e0          	mov    -0x20(%rbp),%rcx
+ 51f:	48 83 f1 ff          	xor    $0xffffffffffffffff,%rcx
+ 523:	48 21 c8             	and    %rcx,%rax
+ 526:	48 89 45 f8          	mov    %rax,-0x8(%rbp)
+ 52a:	48 8b 45 f8          	mov    -0x8(%rbp),%rax
+ 52e:	48 83 c4 20          	add    $0x20,%rsp
+ 532:	5d                   	pop    %rbp
+ 533:	c3                   	ret
+ 534:	66 66 66 2e 0f 1f 84 	data16 data16 cs nopw 0x0(%rax,%rax,1)
+ 53b:	00 00 00 00 00 
+
+0000000000000540 <kmem_split_if_useful>:
+ 540:	55                   	push   %rbp
+ 541:	48 89 e5             	mov    %rsp,%rbp
+ 544:	48 83 ec 40          	sub    $0x40,%rsp
+ 548:	48 89 7d f8          	mov    %rdi,-0x8(%rbp)
+ 54c:	48 89 75 f0          	mov    %rsi,-0x10(%rbp)
+ 550:	bf 30 00 00 00       	mov    $0x30,%edi
+ 555:	be 10 00 00 00       	mov    $0x10,%esi
+ 55a:	e8 51 ff ff ff       	call   4b0 <kmem_align_up_size>
+ 55f:	48 89 45 e8          	mov    %rax,-0x18(%rbp)
+ 563:	48 83 7d e8 00       	cmpq   $0x0,-0x18(%rbp)
+ 568:	75 05                	jne    56f <kmem_split_if_useful+0x2f>
+ 56a:	e9 2c 01 00 00       	jmp    69b <kmem_split_if_useful+0x15b>
+ 56f:	48 8b 45 f8          	mov    -0x8(%rbp),%rax
+ 573:	48 8b 40 08          	mov    0x8(%rax),%rax
+ 577:	48 8b 4d f0          	mov    -0x10(%rbp),%rcx
+ 57b:	48 03 4d e8          	add    -0x18(%rbp),%rcx
+ 57f:	48 83 c1 20          	add    $0x20,%rcx
+ 583:	48 39 c8             	cmp    %rcx,%rax
+ 586:	73 05                	jae    58d <kmem_split_if_useful+0x4d>
+ 588:	e9 0e 01 00 00       	jmp    69b <kmem_split_if_useful+0x15b>
+ 58d:	48 8b 7d f8          	mov    -0x8(%rbp),%rdi
+ 591:	e8 1a 01 00 00       	call   6b0 <kmem_payload>
+ 596:	48 03 45 f0          	add    -0x10(%rbp),%rax
+ 59a:	48 89 45 e0          	mov    %rax,-0x20(%rbp)
+ 59e:	48 8b 7d e0          	mov    -0x20(%rbp),%rdi
+ 5a2:	be 10 00 00 00       	mov    $0x10,%esi
+ 5a7:	e8 b4 fb ff ff       	call   160 <kmem_align_up_ptr>
+ 5ac:	48 89 45 e0          	mov    %rax,-0x20(%rbp)
+ 5b0:	48 83 7d e0 00       	cmpq   $0x0,-0x20(%rbp)
+ 5b5:	75 05                	jne    5bc <kmem_split_if_useful+0x7c>
+ 5b7:	e9 df 00 00 00       	jmp    69b <kmem_split_if_useful+0x15b>
+ 5bc:	48 8b 45 e0          	mov    -0x20(%rbp),%rax
+ 5c0:	48 83 c0 30          	add    $0x30,%rax
+ 5c4:	48 3b 04 25 00 00 00 	cmp    0x0,%rax
+ 5cb:	00 
+			5c8: R_X86_64_32S	.bss+0x8
+ 5cc:	72 05                	jb     5d3 <kmem_split_if_useful+0x93>
+ 5ce:	e9 c8 00 00 00       	jmp    69b <kmem_split_if_useful+0x15b>
+ 5d3:	48 8b 45 e0          	mov    -0x20(%rbp),%rax
+ 5d7:	48 89 45 c8          	mov    %rax,-0x38(%rbp)
+ 5db:	48 8b 7d f8          	mov    -0x8(%rbp),%rdi
+ 5df:	e8 cc 00 00 00       	call   6b0 <kmem_payload>
+ 5e4:	48 89 c1             	mov    %rax,%rcx
+ 5e7:	48 8b 45 c8          	mov    -0x38(%rbp),%rax
+ 5eb:	48 29 c8             	sub    %rcx,%rax
+ 5ee:	48 89 45 d8          	mov    %rax,-0x28(%rbp)
+ 5f2:	48 8b 45 f8          	mov    -0x8(%rbp),%rax
+ 5f6:	48 8b 40 08          	mov    0x8(%rax),%rax
+ 5fa:	48 8b 4d d8          	mov    -0x28(%rbp),%rcx
+ 5fe:	48 83 c1 30          	add    $0x30,%rcx
+ 602:	48 83 c1 20          	add    $0x20,%rcx
+ 606:	48 39 c8             	cmp    %rcx,%rax
+ 609:	77 05                	ja     610 <kmem_split_if_useful+0xd0>
+ 60b:	e9 8b 00 00 00       	jmp    69b <kmem_split_if_useful+0x15b>
+ 610:	48 8b 45 e0          	mov    -0x20(%rbp),%rax
+ 614:	48 89 45 d0          	mov    %rax,-0x30(%rbp)
+ 618:	48 8b 45 d0          	mov    -0x30(%rbp),%rax
+ 61c:	48 b9 41 45 48 53 4f 	movabs $0x4d43534f53484541,%rcx
+ 623:	53 43 4d 
+ 626:	48 89 08             	mov    %rcx,(%rax)
+ 629:	48 8b 45 f8          	mov    -0x8(%rbp),%rax
+ 62d:	48 8b 48 08          	mov    0x8(%rax),%rcx
+ 631:	48 2b 4d d8          	sub    -0x28(%rbp),%rcx
+ 635:	48 83 e9 30          	sub    $0x30,%rcx
+ 639:	48 8b 45 d0          	mov    -0x30(%rbp),%rax
+ 63d:	48 89 48 08          	mov    %rcx,0x8(%rax)
+ 641:	48 8b 45 d0          	mov    -0x30(%rbp),%rax
+ 645:	c7 40 10 01 00 00 00 	movl   $0x1,0x10(%rax)
+ 64c:	48 8b 4d f8          	mov    -0x8(%rbp),%rcx
+ 650:	48 8b 45 d0          	mov    -0x30(%rbp),%rax
+ 654:	48 89 48 20          	mov    %rcx,0x20(%rax)
+ 658:	48 8b 45 f8          	mov    -0x8(%rbp),%rax
+ 65c:	48 8b 48 28          	mov    0x28(%rax),%rcx
+ 660:	48 8b 45 d0          	mov    -0x30(%rbp),%rax
+ 664:	48 89 48 28          	mov    %rcx,0x28(%rax)
+ 668:	48 8b 45 f8          	mov    -0x8(%rbp),%rax
+ 66c:	48 83 78 28 00       	cmpq   $0x0,0x28(%rax)
+ 671:	74 10                	je     683 <kmem_split_if_useful+0x143>
+ 673:	48 8b 4d d0          	mov    -0x30(%rbp),%rcx
+ 677:	48 8b 45 f8          	mov    -0x8(%rbp),%rax
+ 67b:	48 8b 40 28          	mov    0x28(%rax),%rax
+ 67f:	48 89 48 20          	mov    %rcx,0x20(%rax)
+ 683:	48 8b 4d d0          	mov    -0x30(%rbp),%rcx
+ 687:	48 8b 45 f8          	mov    -0x8(%rbp),%rax
+ 68b:	48 89 48 28          	mov    %rcx,0x28(%rax)
+ 68f:	48 8b 4d f0          	mov    -0x10(%rbp),%rcx
+ 693:	48 8b 45 f8          	mov    -0x8(%rbp),%rax
+ 697:	48 89 48 08          	mov    %rcx,0x8(%rax)
+ 69b:	48 83 c4 40          	add    $0x40,%rsp
+ 69f:	5d                   	pop    %rbp
+ 6a0:	c3                   	ret
+ 6a1:	66 66 66 66 66 66 2e 	data16 data16 data16 data16 data16 cs nopw 0x0(%rax,%rax,1)
+ 6a8:	0f 1f 84 00 00 00 00 
+ 6af:	00 
+
+00000000000006b0 <kmem_payload>:
+ 6b0:	55                   	push   %rbp
+ 6b1:	48 89 e5             	mov    %rsp,%rbp
+ 6b4:	50                   	push   %rax
+ 6b5:	48 89 7d f8          	mov    %rdi,-0x8(%rbp)
+ 6b9:	48 8b 45 f8          	mov    -0x8(%rbp),%rax
+ 6bd:	48 83 c0 30          	add    $0x30,%rax
+ 6c1:	48 83 c4 08          	add    $0x8,%rsp
+ 6c5:	5d                   	pop    %rbp
+ 6c6:	c3                   	ret
+ 6c7:	66 0f 1f 84 00 00 00 	nopw   0x0(%rax,%rax,1)
+ 6ce:	00 00 
+
+00000000000006d0 <kmem_calloc>:
+ 6d0:	55                   	push   %rbp
+ 6d1:	48 89 e5             	mov    %rsp,%rbp
+ 6d4:	48 83 ec 30          	sub    $0x30,%rsp
+ 6d8:	48 89 7d f0          	mov    %rdi,-0x10(%rbp)
+ 6dc:	48 89 75 e8          	mov    %rsi,-0x18(%rbp)
+ 6e0:	48 83 7d f0 00       	cmpq   $0x0,-0x10(%rbp)
+ 6e5:	74 2d                	je     714 <kmem_calloc+0x44>
+ 6e7:	48 8b 45 e8          	mov    -0x18(%rbp),%rax
+ 6eb:	48 89 45 d0          	mov    %rax,-0x30(%rbp)
+ 6ef:	48 c7 c0 ff ff ff ff 	mov    $0xffffffffffffffff,%rax
+ 6f6:	31 c9                	xor    %ecx,%ecx
+ 6f8:	89 ca                	mov    %ecx,%edx
+ 6fa:	48 f7 75 f0          	divq   -0x10(%rbp)
+ 6fe:	48 89 c1             	mov    %rax,%rcx
+ 701:	48 8b 45 d0          	mov    -0x30(%rbp),%rax
+ 705:	48 39 c8             	cmp    %rcx,%rax
+ 708:	76 0a                	jbe    714 <kmem_calloc+0x44>
+ 70a:	48 c7 45 f8 00 00 00 	movq   $0x0,-0x8(%rbp)
+ 711:	00 
+ 712:	eb 38                	jmp    74c <kmem_calloc+0x7c>
+ 714:	48 8b 45 f0          	mov    -0x10(%rbp),%rax
+ 718:	48 0f af 45 e8       	imul   -0x18(%rbp),%rax
+ 71d:	48 89 45 e0          	mov    %rax,-0x20(%rbp)
+ 721:	48 8b 7d e0          	mov    -0x20(%rbp),%rdi
+ 725:	e8 00 00 00 00       	call   72a <kmem_calloc+0x5a>
+			726: R_X86_64_PLT32	kmem_alloc-0x4
+ 72a:	48 89 45 d8          	mov    %rax,-0x28(%rbp)
+ 72e:	48 83 7d d8 00       	cmpq   $0x0,-0x28(%rbp)
+ 733:	74 0f                	je     744 <kmem_calloc+0x74>
+ 735:	48 8b 7d d8          	mov    -0x28(%rbp),%rdi
+ 739:	48 8b 55 e0          	mov    -0x20(%rbp),%rdx
+ 73d:	31 f6                	xor    %esi,%esi
+ 73f:	e8 1c 00 00 00       	call   760 <kmem_memset>
+ 744:	48 8b 45 d8          	mov    -0x28(%rbp),%rax
+ 748:	48 89 45 f8          	mov    %rax,-0x8(%rbp)
+ 74c:	48 8b 45 f8          	mov    -0x8(%rbp),%rax
+ 750:	48 83 c4 30          	add    $0x30,%rsp
+ 754:	5d                   	pop    %rbp
+ 755:	c3                   	ret
+ 756:	66 2e 0f 1f 84 00 00 	cs nopw 0x0(%rax,%rax,1)
+ 75d:	00 00 00 
+
+0000000000000760 <kmem_memset>:
+ 760:	55                   	push   %rbp
+ 761:	48 89 e5             	mov    %rsp,%rbp
+ 764:	48 83 ec 20          	sub    $0x20,%rsp
+ 768:	48 89 7d f8          	mov    %rdi,-0x8(%rbp)
+ 76c:	89 75 f4             	mov    %esi,-0xc(%rbp)
+ 76f:	48 89 55 e8          	mov    %rdx,-0x18(%rbp)
+ 773:	48 8b 45 f8          	mov    -0x8(%rbp),%rax
+ 777:	48 89 45 e0          	mov    %rax,-0x20(%rbp)
+ 77b:	48 8b 45 e8          	mov    -0x18(%rbp),%rax
+ 77f:	48 89 c1             	mov    %rax,%rcx
+ 782:	48 83 c1 ff          	add    $0xffffffffffffffff,%rcx
+ 786:	48 89 4d e8          	mov    %rcx,-0x18(%rbp)
+ 78a:	48 83 f8 00          	cmp    $0x0,%rax
+ 78e:	76 18                	jbe    7a8 <kmem_memset+0x48>
+ 790:	8b 45 f4             	mov    -0xc(%rbp),%eax
+ 793:	88 c1                	mov    %al,%cl
+ 795:	48 8b 45 e0          	mov    -0x20(%rbp),%rax
+ 799:	48 89 c2             	mov    %rax,%rdx
+ 79c:	48 83 c2 01          	add    $0x1,%rdx
+ 7a0:	48 89 55 e0          	mov    %rdx,-0x20(%rbp)
+ 7a4:	88 08                	mov    %cl,(%rax)
+ 7a6:	eb d3                	jmp    77b <kmem_memset+0x1b>
+ 7a8:	48 8b 45 f8          	mov    -0x8(%rbp),%rax
+ 7ac:	48 83 c4 20          	add    $0x20,%rsp
+ 7b0:	5d                   	pop    %rbp
+ 7b1:	c3                   	ret
+ 7b2:	66 66 66 66 66 2e 0f 	data16 data16 data16 data16 cs nopw 0x0(%rax,%rax,1)
+ 7b9:	1f 84 00 00 00 00 00 
+
+00000000000007c0 <kmem_free_checked>:
+ 7c0:	55                   	push   %rbp
+ 7c1:	48 89 e5             	mov    %rsp,%rbp
+ 7c4:	48 83 ec 20          	sub    $0x20,%rsp
+ 7c8:	48 89 7d f0          	mov    %rdi,-0x10(%rbp)
+ 7cc:	48 83 7d f0 00       	cmpq   $0x0,-0x10(%rbp)
+ 7d1:	75 0c                	jne    7df <kmem_free_checked+0x1f>
+ 7d3:	c7 45 fc 00 00 00 00 	movl   $0x0,-0x4(%rbp)
+ 7da:	e9 c0 00 00 00       	jmp    89f <kmem_free_checked+0xdf>
+ 7df:	48 8b 7d f0          	mov    -0x10(%rbp),%rdi
+ 7e3:	e8 c8 00 00 00       	call   8b0 <kmem_ptr_in_heap>
+ 7e8:	83 f8 00             	cmp    $0x0,%eax
+ 7eb:	75 0c                	jne    7f9 <kmem_free_checked+0x39>
+ 7ed:	c7 45 fc ff ff ff ff 	movl   $0xffffffff,-0x4(%rbp)
+ 7f4:	e9 a6 00 00 00       	jmp    89f <kmem_free_checked+0xdf>
+ 7f9:	48 8b 45 f0          	mov    -0x10(%rbp),%rax
+ 7fd:	48 83 e0 0f          	and    $0xf,%rax
+ 801:	48 83 f8 00          	cmp    $0x0,%rax
+ 805:	74 0c                	je     813 <kmem_free_checked+0x53>
+ 807:	c7 45 fc fe ff ff ff 	movl   $0xfffffffe,-0x4(%rbp)
+ 80e:	e9 8c 00 00 00       	jmp    89f <kmem_free_checked+0xdf>
+ 813:	48 8b 7d f0          	mov    -0x10(%rbp),%rdi
+ 817:	e8 f4 00 00 00       	call   910 <kmem_header_from_payload>
+ 81c:	48 89 45 e8          	mov    %rax,-0x18(%rbp)
+ 820:	48 8b 7d e8          	mov    -0x18(%rbp),%rdi
+ 824:	e8 87 00 00 00       	call   8b0 <kmem_ptr_in_heap>
+ 829:	83 f8 00             	cmp    $0x0,%eax
+ 82c:	74 13                	je     841 <kmem_free_checked+0x81>
+ 82e:	48 8b 45 e8          	mov    -0x18(%rbp),%rax
+ 832:	48 b9 41 45 48 53 4f 	movabs $0x4d43534f53484541,%rcx
+ 839:	53 43 4d 
+ 83c:	48 39 08             	cmp    %rcx,(%rax)
+ 83f:	74 09                	je     84a <kmem_free_checked+0x8a>
+ 841:	c7 45 fc fd ff ff ff 	movl   $0xfffffffd,-0x4(%rbp)
+ 848:	eb 55                	jmp    89f <kmem_free_checked+0xdf>
+ 84a:	48 8b 45 e8          	mov    -0x18(%rbp),%rax
+ 84e:	83 78 10 00          	cmpl   $0x0,0x10(%rax)
+ 852:	74 09                	je     85d <kmem_free_checked+0x9d>
+ 854:	c7 45 fc fc ff ff ff 	movl   $0xfffffffc,-0x4(%rbp)
+ 85b:	eb 42                	jmp    89f <kmem_free_checked+0xdf>
+ 85d:	48 8b 45 e8          	mov    -0x18(%rbp),%rax
+ 861:	c7 40 10 01 00 00 00 	movl   $0x1,0x10(%rax)
+ 868:	48 8b 7d e8          	mov    -0x18(%rbp),%rdi
+ 86c:	e8 bf 00 00 00       	call   930 <kmem_coalesce_forward>
+ 871:	48 8b 45 e8          	mov    -0x18(%rbp),%rax
+ 875:	48 83 78 20 00       	cmpq   $0x0,0x20(%rax)
+ 87a:	74 1b                	je     897 <kmem_free_checked+0xd7>
+ 87c:	48 8b 45 e8          	mov    -0x18(%rbp),%rax
+ 880:	48 8b 40 20          	mov    0x20(%rax),%rax
+ 884:	83 78 10 00          	cmpl   $0x0,0x10(%rax)
+ 888:	74 0d                	je     897 <kmem_free_checked+0xd7>
+ 88a:	48 8b 45 e8          	mov    -0x18(%rbp),%rax
+ 88e:	48 8b 78 20          	mov    0x20(%rax),%rdi
+ 892:	e8 99 00 00 00       	call   930 <kmem_coalesce_forward>
+ 897:	e8 00 00 00 00       	call   89c <kmem_free_checked+0xdc>
+			898: R_X86_64_PLT32	kmem_validate-0x4
+ 89c:	89 45 fc             	mov    %eax,-0x4(%rbp)
+ 89f:	8b 45 fc             	mov    -0x4(%rbp),%eax
+ 8a2:	48 83 c4 20          	add    $0x20,%rsp
+ 8a6:	5d                   	pop    %rbp
+ 8a7:	c3                   	ret
+ 8a8:	0f 1f 84 00 00 00 00 	nopl   0x0(%rax,%rax,1)
+ 8af:	00 
+
+00000000000008b0 <kmem_ptr_in_heap>:
+ 8b0:	55                   	push   %rbp
+ 8b1:	48 89 e5             	mov    %rsp,%rbp
+ 8b4:	48 83 ec 18          	sub    $0x18,%rsp
+ 8b8:	48 89 7d f8          	mov    %rdi,-0x8(%rbp)
+ 8bc:	48 8b 45 f8          	mov    -0x8(%rbp),%rax
+ 8c0:	48 89 45 f0          	mov    %rax,-0x10(%rbp)
+ 8c4:	31 c0                	xor    %eax,%eax
+ 8c6:	83 3c 25 00 00 00 00 	cmpl   $0x0,0x0
+ 8cd:	00 
+			8c9: R_X86_64_32S	.bss+0x18
+ 8ce:	88 45 ef             	mov    %al,-0x11(%rbp)
+ 8d1:	74 25                	je     8f8 <kmem_ptr_in_heap+0x48>
+ 8d3:	48 8b 4d f0          	mov    -0x10(%rbp),%rcx
+ 8d7:	31 c0                	xor    %eax,%eax
+ 8d9:	48 3b 0c 25 00 00 00 	cmp    0x0,%rcx
+ 8e0:	00 
+			8dd: R_X86_64_32S	.bss
+ 8e1:	88 45 ef             	mov    %al,-0x11(%rbp)
+ 8e4:	72 12                	jb     8f8 <kmem_ptr_in_heap+0x48>
+ 8e6:	48 8b 45 f0          	mov    -0x10(%rbp),%rax
+ 8ea:	48 3b 04 25 00 00 00 	cmp    0x0,%rax
+ 8f1:	00 
+			8ee: R_X86_64_32S	.bss+0x8
+ 8f2:	0f 92 c0             	setb   %al
+ 8f5:	88 45 ef             	mov    %al,-0x11(%rbp)
+ 8f8:	8a 45 ef             	mov    -0x11(%rbp),%al
+ 8fb:	24 01                	and    $0x1,%al
+ 8fd:	0f b6 c0             	movzbl %al,%eax
+ 900:	48 83 c4 18          	add    $0x18,%rsp
+ 904:	5d                   	pop    %rbp
+ 905:	c3                   	ret
+ 906:	66 2e 0f 1f 84 00 00 	cs nopw 0x0(%rax,%rax,1)
+ 90d:	00 00 00 
+
+0000000000000910 <kmem_header_from_payload>:
+ 910:	55                   	push   %rbp
+ 911:	48 89 e5             	mov    %rsp,%rbp
+ 914:	50                   	push   %rax
+ 915:	48 89 7d f8          	mov    %rdi,-0x8(%rbp)
+ 919:	48 8b 45 f8          	mov    -0x8(%rbp),%rax
+ 91d:	48 83 c0 d0          	add    $0xffffffffffffffd0,%rax
+ 921:	48 83 c4 08          	add    $0x8,%rsp
+ 925:	5d                   	pop    %rbp
+ 926:	c3                   	ret
+ 927:	66 0f 1f 84 00 00 00 	nopw   0x0(%rax,%rax,1)
+ 92e:	00 00 
+
+0000000000000930 <kmem_coalesce_forward>:
+ 930:	55                   	push   %rbp
+ 931:	48 89 e5             	mov    %rsp,%rbp
+ 934:	48 83 ec 20          	sub    $0x20,%rsp
+ 938:	48 89 7d f8          	mov    %rdi,-0x8(%rbp)
+ 93c:	31 c0                	xor    %eax,%eax
+ 93e:	48 83 7d f8 00       	cmpq   $0x0,-0x8(%rbp)
+ 943:	88 45 e7             	mov    %al,-0x19(%rbp)
+ 946:	74 22                	je     96a <kmem_coalesce_forward+0x3a>
+ 948:	48 8b 4d f8          	mov    -0x8(%rbp),%rcx
+ 94c:	31 c0                	xor    %eax,%eax
+ 94e:	48 83 79 28 00       	cmpq   $0x0,0x28(%rcx)
+ 953:	88 45 e7             	mov    %al,-0x19(%rbp)
+ 956:	74 12                	je     96a <kmem_coalesce_forward+0x3a>
+ 958:	48 8b 45 f8          	mov    -0x8(%rbp),%rax
+ 95c:	48 8b 40 28          	mov    0x28(%rax),%rax
+ 960:	83 78 10 00          	cmpl   $0x0,0x10(%rax)
+ 964:	0f 95 c0             	setne  %al
+ 967:	88 45 e7             	mov    %al,-0x19(%rbp)
+ 96a:	8a 45 e7             	mov    -0x19(%rbp),%al
+ 96d:	a8 01                	test   $0x1,%al
+ 96f:	75 05                	jne    976 <kmem_coalesce_forward+0x46>
+ 971:	e9 b6 00 00 00       	jmp    a2c <kmem_coalesce_forward+0xfc>
+ 976:	48 8b 45 f8          	mov    -0x8(%rbp),%rax
+ 97a:	48 8b 40 28          	mov    0x28(%rax),%rax
+ 97e:	48 89 45 f0          	mov    %rax,-0x10(%rbp)
+ 982:	48 8b 7d f8          	mov    -0x8(%rbp),%rdi
+ 986:	e8 25 fd ff ff       	call   6b0 <kmem_payload>
+ 98b:	48 8b 4d f8          	mov    -0x8(%rbp),%rcx
+ 98f:	48 03 41 08          	add    0x8(%rcx),%rax
+ 993:	48 89 45 e8          	mov    %rax,-0x18(%rbp)
+ 997:	48 8b 7d e8          	mov    -0x18(%rbp),%rdi
+ 99b:	be 10 00 00 00       	mov    $0x10,%esi
+ 9a0:	e8 bb f7 ff ff       	call   160 <kmem_align_up_ptr>
+ 9a5:	48 89 45 e8          	mov    %rax,-0x18(%rbp)
+ 9a9:	48 8b 45 e8          	mov    -0x18(%rbp),%rax
+ 9ad:	48 3b 45 f0          	cmp    -0x10(%rbp),%rax
+ 9b1:	74 02                	je     9b5 <kmem_coalesce_forward+0x85>
+ 9b3:	eb 77                	jmp    a2c <kmem_coalesce_forward+0xfc>
+ 9b5:	48 8b 45 f0          	mov    -0x10(%rbp),%rax
+ 9b9:	48 8b 48 08          	mov    0x8(%rax),%rcx
+ 9bd:	48 83 c1 30          	add    $0x30,%rcx
+ 9c1:	48 8b 45 f8          	mov    -0x8(%rbp),%rax
+ 9c5:	48 03 48 08          	add    0x8(%rax),%rcx
+ 9c9:	48 89 48 08          	mov    %rcx,0x8(%rax)
+ 9cd:	48 8b 45 f0          	mov    -0x10(%rbp),%rax
+ 9d1:	48 8b 48 28          	mov    0x28(%rax),%rcx
+ 9d5:	48 8b 45 f8          	mov    -0x8(%rbp),%rax
+ 9d9:	48 89 48 28          	mov    %rcx,0x28(%rax)
+ 9dd:	48 8b 45 f0          	mov    -0x10(%rbp),%rax
+ 9e1:	48 83 78 28 00       	cmpq   $0x0,0x28(%rax)
+ 9e6:	74 10                	je     9f8 <kmem_coalesce_forward+0xc8>
+ 9e8:	48 8b 4d f8          	mov    -0x8(%rbp),%rcx
+ 9ec:	48 8b 45 f0          	mov    -0x10(%rbp),%rax
+ 9f0:	48 8b 40 28          	mov    0x28(%rax),%rax
+ 9f4:	48 89 48 20          	mov    %rcx,0x20(%rax)
+ 9f8:	48 8b 45 f0          	mov    -0x10(%rbp),%rax
+ 9fc:	48 c7 00 00 00 00 00 	movq   $0x0,(%rax)
+ a03:	48 8b 45 f0          	mov    -0x10(%rbp),%rax
+ a07:	48 c7 40 08 00 00 00 	movq   $0x0,0x8(%rax)
+ a0e:	00 
+ a0f:	48 8b 45 f0          	mov    -0x10(%rbp),%rax
+ a13:	48 c7 40 20 00 00 00 	movq   $0x0,0x20(%rax)
+ a1a:	00 
+ a1b:	48 8b 45 f0          	mov    -0x10(%rbp),%rax
+ a1f:	48 c7 40 28 00 00 00 	movq   $0x0,0x28(%rax)
+ a26:	00 
+ a27:	e9 10 ff ff ff       	jmp    93c <kmem_coalesce_forward+0xc>
+ a2c:	48 83 c4 20          	add    $0x20,%rsp
+ a30:	5d                   	pop    %rbp
+ a31:	c3                   	ret
+ a32:	66 66 66 66 66 2e 0f 	data16 data16 data16 data16 cs nopw 0x0(%rax,%rax,1)
+ a39:	1f 84 00 00 00 00 00 
+
+0000000000000a40 <kmem_get_stats>:
+ a40:	55                   	push   %rbp
+ a41:	48 89 e5             	mov    %rsp,%rbp
+ a44:	48 83 ec 10          	sub    $0x10,%rsp
+ a48:	48 89 7d f8          	mov    %rdi,-0x8(%rbp)
+ a4c:	48 83 7d f8 00       	cmpq   $0x0,-0x8(%rbp)
+ a51:	75 05                	jne    a58 <kmem_get_stats+0x18>
+ a53:	e9 10 01 00 00       	jmp    b68 <kmem_get_stats+0x128>
+ a58:	48 8b 45 f8          	mov    -0x8(%rbp),%rax
+ a5c:	48 c7 00 00 00 00 00 	movq   $0x0,(%rax)
+ a63:	48 8b 45 f8          	mov    -0x8(%rbp),%rax
+ a67:	48 c7 40 08 00 00 00 	movq   $0x0,0x8(%rax)
+ a6e:	00 
+ a6f:	48 8b 45 f8          	mov    -0x8(%rbp),%rax
+ a73:	48 c7 40 10 00 00 00 	movq   $0x0,0x10(%rax)
+ a7a:	00 
+ a7b:	48 8b 45 f8          	mov    -0x8(%rbp),%rax
+ a7f:	48 c7 40 18 00 00 00 	movq   $0x0,0x18(%rax)
+ a86:	00 
+ a87:	48 8b 45 f8          	mov    -0x8(%rbp),%rax
+ a8b:	48 c7 40 20 00 00 00 	movq   $0x0,0x20(%rax)
+ a92:	00 
+ a93:	48 8b 45 f8          	mov    -0x8(%rbp),%rax
+ a97:	48 c7 40 28 00 00 00 	movq   $0x0,0x28(%rax)
+ a9e:	00 
+ a9f:	83 3c 25 00 00 00 00 	cmpl   $0x0,0x0
+ aa6:	00 
+			aa2: R_X86_64_32S	.bss+0x18
+ aa7:	75 05                	jne    aae <kmem_get_stats+0x6e>
+ aa9:	e9 ba 00 00 00       	jmp    b68 <kmem_get_stats+0x128>
+ aae:	48 8b 0c 25 00 00 00 	mov    0x0,%rcx
+ ab5:	00 
+			ab2: R_X86_64_32S	.bss+0x8
+ ab6:	48 8b 04 25 00 00 00 	mov    0x0,%rax
+ abd:	00 
+			aba: R_X86_64_32S	.bss
+ abe:	48 29 c1             	sub    %rax,%rcx
+ ac1:	48 8b 45 f8          	mov    -0x8(%rbp),%rax
+ ac5:	48 89 08             	mov    %rcx,(%rax)
+ ac8:	48 8b 04 25 00 00 00 	mov    0x0,%rax
+ acf:	00 
+			acc: R_X86_64_32S	.bss+0x10
+ ad0:	48 89 45 f0          	mov    %rax,-0x10(%rbp)
+ ad4:	48 83 7d f0 00       	cmpq   $0x0,-0x10(%rbp)
+ ad9:	0f 84 89 00 00 00    	je     b68 <kmem_get_stats+0x128>
+ adf:	48 8b 45 f8          	mov    -0x8(%rbp),%rax
+ ae3:	48 8b 48 18          	mov    0x18(%rax),%rcx
+ ae7:	48 83 c1 01          	add    $0x1,%rcx
+ aeb:	48 89 48 18          	mov    %rcx,0x18(%rax)
+ aef:	48 8b 45 f0          	mov    -0x10(%rbp),%rax
+ af3:	83 78 10 00          	cmpl   $0x0,0x10(%rax)
+ af7:	74 48                	je     b41 <kmem_get_stats+0x101>
+ af9:	48 8b 45 f8          	mov    -0x8(%rbp),%rax
+ afd:	48 8b 48 20          	mov    0x20(%rax),%rcx
+ b01:	48 83 c1 01          	add    $0x1,%rcx
+ b05:	48 89 48 20          	mov    %rcx,0x20(%rax)
+ b09:	48 8b 45 f0          	mov    -0x10(%rbp),%rax
+ b0d:	48 8b 48 08          	mov    0x8(%rax),%rcx
+ b11:	48 8b 45 f8          	mov    -0x8(%rbp),%rax
+ b15:	48 03 48 10          	add    0x10(%rax),%rcx
+ b19:	48 89 48 10          	mov    %rcx,0x10(%rax)
+ b1d:	48 8b 45 f0          	mov    -0x10(%rbp),%rax
+ b21:	48 8b 40 08          	mov    0x8(%rax),%rax
+ b25:	48 8b 4d f8          	mov    -0x8(%rbp),%rcx
+ b29:	48 3b 41 28          	cmp    0x28(%rcx),%rax
+ b2d:	76 10                	jbe    b3f <kmem_get_stats+0xff>
+ b2f:	48 8b 45 f0          	mov    -0x10(%rbp),%rax
+ b33:	48 8b 48 08          	mov    0x8(%rax),%rcx
+ b37:	48 8b 45 f8          	mov    -0x8(%rbp),%rax
+ b3b:	48 89 48 28          	mov    %rcx,0x28(%rax)
+ b3f:	eb 14                	jmp    b55 <kmem_get_stats+0x115>
+ b41:	48 8b 45 f0          	mov    -0x10(%rbp),%rax
+ b45:	48 8b 48 08          	mov    0x8(%rax),%rcx
+ b49:	48 8b 45 f8          	mov    -0x8(%rbp),%rax
+ b4d:	48 03 48 08          	add    0x8(%rax),%rcx
+ b51:	48 89 48 08          	mov    %rcx,0x8(%rax)
+ b55:	eb 00                	jmp    b57 <kmem_get_stats+0x117>
+ b57:	48 8b 45 f0          	mov    -0x10(%rbp),%rax
+ b5b:	48 8b 40 28          	mov    0x28(%rax),%rax
+ b5f:	48 89 45 f0          	mov    %rax,-0x10(%rbp)
+ b63:	e9 6c ff ff ff       	jmp    ad4 <kmem_get_stats+0x94>
+ b68:	48 83 c4 10          	add    $0x10,%rsp
+ b6c:	5d                   	pop    %rbp
+ b6d:	c3                   	ret

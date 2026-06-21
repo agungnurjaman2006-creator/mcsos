@@ -1,0 +1,12 @@
+MCSOS M8 evidence manifest
+timestamp_utc=2026-06-21T06:29:35Z
+commit=59ebb474782155ced259d90f0bd1b17c81f2c0fd
+clang=Ubuntu clang version 21.1.8 (6ubuntu1)
+lld=Ubuntu LLD 21.1.8 (compatible with GNU linkers)
+qemu=QEMU emulator version 10.2.1 (Debian 1:10.2.1+ds-1ubuntu3)
+kmem.objdump.txt
+m8-qemu-serial.log
+manifest.txt
+nm_u.txt
+readelf_h.txt
+test_kmem.log

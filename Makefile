@@ -152,3 +152,32 @@ check: $(BUILD_DIR)/vmm.o $(BUILD_DIR)/test_vmm_host
 >grep -q "invlpg" $(BUILD_DIR)/vmm.objdump.txt
 >grep -q "cr3" $(BUILD_DIR)/vmm.objdump.txt
 >@echo "[M7][PASS] make check lulus"
+
+# --- M8 Kernel Heap targets ---
+CFLAGS_M8_COMMON := -std=c17 -Wall -Wextra -Werror -Iinclude
+CFLAGS_M8_KERNEL := $(CFLAGS_M8_COMMON) --target=x86_64-unknown-none-elf \
+    -ffreestanding -fno-builtin -fno-stack-protector -mno-red-zone
+BUILD_M8 := build/m8
+
+.PHONY: m8-clean m8-kmem-host-test m8-kmem-freestanding m8-audit m8-all
+
+m8-clean:
+>$(RM) -r $(BUILD_M8)
+
+$(BUILD_M8):
+>mkdir -p $(BUILD_M8)
+
+m8-kmem-freestanding: | $(BUILD_M8)
+>$(CC) $(CFLAGS_M8_KERNEL) -c kernel/mm/kmem.c -o $(BUILD_M8)/kmem.freestanding.o
+
+m8-kmem-host-test: | $(BUILD_M8)
+>$(CC) $(CFLAGS_M8_COMMON) tests/test_kmem.c kernel/mm/kmem.c -o $(BUILD_M8)/test_kmem
+>./$(BUILD_M8)/test_kmem | tee $(BUILD_M8)/test_kmem.log
+
+m8-audit: m8-kmem-freestanding
+>$(NM) -u $(BUILD_M8)/kmem.freestanding.o | tee $(BUILD_M8)/nm_u.txt
+>test ! -s $(BUILD_M8)/nm_u.txt
+>$(READELF) -h $(BUILD_M8)/kmem.freestanding.o > $(BUILD_M8)/readelf_h.txt
+>$(OBJDUMP) -dr $(BUILD_M8)/kmem.freestanding.o > $(BUILD_M8)/kmem.objdump.txt
+
+m8-all: m8-kmem-host-test m8-audit

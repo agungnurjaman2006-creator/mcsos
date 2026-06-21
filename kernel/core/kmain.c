@@ -8,6 +8,7 @@
 #include <mcsos/kernel/version.h>
 #include "pmm.h"
 #include "vmm.h"
+#include "mcsos/kmem.h"
 
 extern char __kernel_start[];
 extern char __kernel_end[];
@@ -143,6 +144,32 @@ static void m7_vmm_init(void) {
     log_writeln("[M7] ready for QEMU smoke test and GDB audit");
 }
 
+
+#define M8_BOOT_HEAP_SIZE (64u * 1024u)
+static unsigned char m8_boot_heap[M8_BOOT_HEAP_SIZE] __attribute__((aligned(4096)));
+
+static void m8_heap_bootstrap(void) {
+    int rc = kmem_init(m8_boot_heap, sizeof(m8_boot_heap));
+    if (rc != 0) {
+        KERNEL_PANIC("M8 kmem_init failed", (uint64_t)(uint32_t)rc);
+    }
+    void *probe = kmem_alloc(128);
+    if (probe == (void *)0) {
+        KERNEL_PANIC("M8 kmem_alloc probe failed", 0u);
+    }
+    if (kmem_free_checked(probe) != 0) {
+        KERNEL_PANIC("M8 kmem_free_checked probe failed", 0u);
+    }
+    kmem_stats_t st;
+    kmem_get_stats(&st);
+    log_writeln("[M8] kmem initialized");
+    log_key_value_hex64("kmem_total",   (uint64_t)st.total_bytes);
+    log_key_value_hex64("kmem_free",    (uint64_t)st.free_bytes);
+    log_key_value_hex64("kmem_largest", (uint64_t)st.largest_free);
+    log_key_value_hex64("kmem_blocks",  (uint64_t)st.block_count);
+    log_writeln("[M8] heap probe alloc/free roundtrip ok");
+}
+
 void kmain(void) {
     cpu_cli();
 
@@ -160,6 +187,7 @@ void kmain(void) {
 
     m6_pmm_init_dummy();
     m7_vmm_init();
+    m8_heap_bootstrap();
 
 #ifdef MCSOS_M4_TRIGGER_BREAKPOINT
     log_writeln("[M4] triggering intentional breakpoint exception");
