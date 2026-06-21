@@ -1,0 +1,59 @@
+== git ==
+/home/agung/src/mcsos
+d9fadc3
+?? evidence/m9/
+
+== tools ==
+Ubuntu clang version 21.1.8 (6ubuntu1)
+Target: x86_64-pc-linux-gnu
+Thread model: posix
+InstalledDir: /usr/lib/llvm-21/bin
+gcc (Ubuntu 15.2.0-16ubuntu1) 15.2.0
+Ubuntu LLD 21.1.8 (compatible with GNU linkers)
+GNU ld (GNU Binutils for Ubuntu) 2.46
+GNU Make 4.4.1
+QEMU emulator version 10.2.1 (Debian 1:10.2.1+ds-1ubuntu3)
+Copyright (c) 2003-2025 Fabrice Bellard and the QEMU Project developers
+GNU gdb (Ubuntu 17.1-2ubuntu1) 17.1
+
+== previous artifacts ==
+build/kernel.elf
+build/kernel.map
+build/m8-qemu-serial.log
+build/m8/kmem.freestanding.o
+build/m8/kmem.objdump.txt
+build/m8/nm_u.txt
+build/m8/readelf_h.txt
+build/m8/test_kmem
+build/m8/test_kmem.log
+build/mcsos.iso
+build/mcsos.iso.sha256
+build/normal/src/pmm.o
+build/normal/src/vmm.o
+evidence/M3/kernel.disasm.txt
+evidence/M3/kernel.elf
+evidence/M3/kernel.map
+evidence/M3/kernel.readelf.header.txt
+evidence/M3/kernel.readelf.programs.txt
+evidence/M3/kernel.syms.txt
+evidence/M3/m3_serial.log
+evidence/M3/manifest.txt
+evidence/M4/kernel.elf
+evidence/M4/kernel.map
+evidence/M4/m4-qemu-breakpoint.log
+evidence/M4/m4-qemu-serial.log
+evidence/M4/manifest.txt
+evidence/M7/m7-qemu-serial.log
+evidence/M7/m7_make_check.log
+evidence/M7/m7_vmm_nm_undefined.txt
+evidence/M7/m7_vmm_objdump.txt
+evidence/M7/m7_vmm_readelf_header.txt
+evidence/M7/m7_vmm_readelf_sections.txt
+evidence/M7/manifest.txt
+evidence/M8/kmem.objdump.txt
+evidence/M8/m8-qemu-serial.log
+evidence/M8/manifest.txt
+evidence/M8/nm_u.txt
+evidence/M8/readelf_h.txt
+evidence/M8/test_kmem.log
+evidence/m9/preflight_m9.log

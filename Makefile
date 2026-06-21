@@ -40,11 +40,14 @@ SRC_C := $(shell find kernel src -name '*.c' | LC_ALL=C sort)
 SRC_S := $(shell find kernel -name '*.S' | LC_ALL=C sort)
 
 OBJ       := $(patsubst %.c,$(BUILD_DIR)/normal/%.o,$(SRC_C)) \
-             $(patsubst %.S,$(BUILD_DIR)/normal/%.o,$(SRC_S))
+             $(patsubst %.S,$(BUILD_DIR)/normal/%.o,$(SRC_S)) \
+             $(BUILD_DIR)/normal/arch/x86_64/context_switch.o
 BP_OBJ    := $(patsubst %.c,$(BUILD_DIR)/breakpoint/%.o,$(SRC_C)) \
-             $(patsubst %.S,$(BUILD_DIR)/breakpoint/%.o,$(SRC_S))
+             $(patsubst %.S,$(BUILD_DIR)/breakpoint/%.o,$(SRC_S)) \
+             $(BUILD_DIR)/breakpoint/arch/x86_64/context_switch.o
 PANIC_OBJ := $(patsubst %.c,$(BUILD_DIR)/panic/%.o,$(SRC_C)) \
-             $(patsubst %.S,$(BUILD_DIR)/panic/%.o,$(SRC_S))
+             $(patsubst %.S,$(BUILD_DIR)/panic/%.o,$(SRC_S)) \
+             $(BUILD_DIR)/panic/arch/x86_64/context_switch.o
 
 .PHONY: all build breakpoint panic inspect audit clean distclean
 
@@ -181,3 +184,33 @@ m8-audit: m8-kmem-freestanding
 >$(OBJDUMP) -dr $(BUILD_M8)/kmem.freestanding.o > $(BUILD_M8)/kmem.objdump.txt
 
 m8-all: m8-kmem-host-test m8-audit
+
+M9_BUILD := build/m9
+M9_CFLAGS_HOST := -std=c17 -Wall -Wextra -Werror -DMCSOS_HOST_TEST -Iinclude
+M9_CFLAGS_KERNEL := --target=x86_64-unknown-none-elf -std=c17 -ffreestanding -fno-stack-protector -fno-pic -fno-pie -mno-red-zone -Wall -Wextra -Werror -Iinclude
+M9_ASFLAGS_KERNEL := --target=x86_64-unknown-none-elf -ffreestanding -fno-stack-protector -fno-pic -fno-pie -mno-red-zone
+
+.PHONY: m9-all m9-host-test m9-freestanding m9-audit m9-clean
+
+m9-all: m9-host-test m9-freestanding m9-audit
+
+$(M9_BUILD):
+>mkdir -p $(M9_BUILD)
+
+m9-host-test: $(M9_BUILD)
+>$(CC) $(M9_CFLAGS_HOST) tests/test_scheduler.c kernel/mcsos_thread.c -o $(M9_BUILD)/m9_host_test
+>$(M9_BUILD)/m9_host_test | tee $(M9_BUILD)/test_scheduler.log
+
+m9-freestanding: $(M9_BUILD)
+>$(CC) $(M9_CFLAGS_KERNEL) -c kernel/mcsos_thread.c -o $(M9_BUILD)/mcsos_thread.freestanding.o
+>$(CC) $(M9_ASFLAGS_KERNEL) -c arch/x86_64/context_switch.S -o $(M9_BUILD)/context_switch.o
+>$(LD) -r $(M9_BUILD)/mcsos_thread.freestanding.o $(M9_BUILD)/context_switch.o -o $(M9_BUILD)/m9_scheduler_combined.o
+
+m9-audit: m9-freestanding
+>$(NM) -u $(M9_BUILD)/m9_scheduler_combined.o | tee $(M9_BUILD)/nm_undefined.log
+>$(READELF) -h $(M9_BUILD)/m9_scheduler_combined.o | tee $(M9_BUILD)/readelf_header.log
+>$(OBJDUMP) -d $(M9_BUILD)/m9_scheduler_combined.o | grep -E 'mcsos_context_switch|jmp|ret|hlt' | tee $(M9_BUILD)/objdump_key.log
+>sha256sum $(M9_BUILD)/m9_host_test $(M9_BUILD)/m9_scheduler_combined.o | tee $(M9_BUILD)/sha256.log
+
+m9-clean:
+>rm -rf $(M9_BUILD)

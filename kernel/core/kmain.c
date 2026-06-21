@@ -9,6 +9,7 @@
 #include "pmm.h"
 #include "vmm.h"
 #include "mcsos/kmem.h"
+#include "mcsos_thread.h"
 
 extern char __kernel_start[];
 extern char __kernel_end[];
@@ -24,6 +25,29 @@ static struct vmm_space g_vmm;
    Limine HhdmRequest. Nilai 0 berarti physical == virtual (identity map),
    yang hanya valid selama bootloader masih menyediakan identity mapping. */
 static uint64_t g_hhdm_offset = 0ULL;
+
+static mcsos_scheduler_t g_sched;
+static mcsos_thread_t g_boot_thread;
+static mcsos_thread_t g_thread_a;
+static mcsos_thread_t g_thread_b;
+static unsigned char g_stack_a[8192] __attribute__((aligned(16)));
+static unsigned char g_stack_b[8192] __attribute__((aligned(16)));
+
+static void m9_demo_thread_a(void *arg) {
+    (void)arg;
+    for (;;) {
+        log_writeln("[M9] thread A tick");
+        mcsos_sched_yield(&g_sched);
+    }
+}
+
+static void m9_demo_thread_b(void *arg) {
+    (void)arg;
+    for (;;) {
+        log_writeln("[M9] thread B tick");
+        mcsos_sched_yield(&g_sched);
+    }
+}
 
 static void m4_selftest(void) {
     KERNEL_ASSERT(__kernel_end > __kernel_start);
@@ -170,6 +194,48 @@ static void m8_heap_bootstrap(void) {
     log_writeln("[M8] heap probe alloc/free roundtrip ok");
 }
 
+static void m9_scheduler_bootstrap(void) {
+    int rc = mcsos_scheduler_init(&g_sched, &g_boot_thread);
+    if (rc != MCSOS_SCHED_OK) {
+        KERNEL_PANIC("M9 mcsos_scheduler_init failed", (uint64_t)(uint32_t)rc);
+    }
+
+    rc = mcsos_thread_prepare(&g_thread_a, "demo-a", m9_demo_thread_a, (void *)0,
+                              g_stack_a, sizeof(g_stack_a), g_sched.next_id++);
+    if (rc != MCSOS_SCHED_OK) {
+        KERNEL_PANIC("M9 mcsos_thread_prepare a failed", (uint64_t)(uint32_t)rc);
+    }
+
+    rc = mcsos_thread_prepare(&g_thread_b, "demo-b", m9_demo_thread_b, (void *)0,
+                              g_stack_b, sizeof(g_stack_b), g_sched.next_id++);
+    if (rc != MCSOS_SCHED_OK) {
+        KERNEL_PANIC("M9 mcsos_thread_prepare b failed", (uint64_t)(uint32_t)rc);
+    }
+
+    rc = mcsos_sched_enqueue(&g_sched, &g_thread_a);
+    if (rc != MCSOS_SCHED_OK) {
+        KERNEL_PANIC("M9 mcsos_sched_enqueue a failed", (uint64_t)(uint32_t)rc);
+    }
+
+    rc = mcsos_sched_enqueue(&g_sched, &g_thread_b);
+    if (rc != MCSOS_SCHED_OK) {
+        KERNEL_PANIC("M9 mcsos_sched_enqueue b failed", (uint64_t)(uint32_t)rc);
+    }
+
+    if (mcsos_sched_validate(&g_sched) != MCSOS_SCHED_OK) {
+        KERNEL_PANIC("M9 mcsos_sched_validate failed after setup", 0u);
+    }
+
+    log_writeln("[M9] scheduler initialized");
+    log_key_value_hex64("m9_ready_count", (uint64_t)mcsos_sched_ready_count(&g_sched));
+}
+
+__attribute__((noreturn)) static void m9_scheduler_idle_loop(void) {
+    for (;;) {
+        mcsos_sched_yield(&g_sched);
+    }
+}
+
 void kmain(void) {
     cpu_cli();
 
@@ -188,6 +254,7 @@ void kmain(void) {
     m6_pmm_init_dummy();
     m7_vmm_init();
     m8_heap_bootstrap();
+    m9_scheduler_bootstrap();
 
 #ifdef MCSOS_M4_TRIGGER_BREAKPOINT
     log_writeln("[M4] triggering intentional breakpoint exception");
@@ -208,6 +275,6 @@ void kmain(void) {
     cpu_sti();
     log_writeln("[M4] IDT and exception dispatch path installed");
     log_writeln("[M5] ready for QEMU smoke test and GDB audit");
-    m5_idle_loop();
+    m9_scheduler_idle_loop();
 #endif
 }
