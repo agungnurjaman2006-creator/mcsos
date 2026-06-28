@@ -1,0 +1,12 @@
+PASS valid ELF64 image: M11_OK
+PASS valid plan fields: entry=0x401000 segments=2
+PASS bad magic: M11_ERR_MAGIC
+PASS bad machine: M11_ERR_MACHINE
+PASS entry outside user range: M11_ERR_ENTRY
+PASS memsz below filesz: M11_ERR_SEGBOUNDS
+PASS file range outside image: M11_ERR_SEGBOUNDS
+PASS bad alignment: M11_ERR_ALIGN
+PASS segment outside user range: M11_ERR_SEGRANGE
+PASS W+X segment rejected: M11_ERR_FLAGS
+PASS null image pointer: M11_ERR_NULL
+M11 host tests passed.

@@ -1,0 +1,43 @@
+[M11] Preflight lingkungan dan artefak M0-M10
+[OK] git -> /usr/bin/git
+[OK] make -> /usr/bin/make
+[OK] clang -> /usr/bin/clang
+[OK] nm -> /usr/bin/nm
+[OK] readelf -> /usr/bin/readelf
+[OK] objdump -> /usr/bin/objdump
+[OK] sha256sum -> /usr/bin/sha256sum
+Ubuntu clang version 21.1.8 (6ubuntu1)
+GNU Make 4.4.1
+[OK] file: include/mcsos/user/m11_elf_loader.h
+[OK] file: kernel/user/m11_elf_loader.c
+[OK] file: tests/m11/m11_host_test.c
+[OK] file: Makefile.m11
+[M11] menjalankan host test...
+build/m11_host_test | tee build/m11_host_test.log
+PASS valid ELF64 image: M11_OK
+PASS valid plan fields: entry=0x401000 segments=2
+PASS bad magic: M11_ERR_MAGIC
+PASS bad machine: M11_ERR_MACHINE
+PASS entry outside user range: M11_ERR_ENTRY
+PASS memsz below filesz: M11_ERR_SEGBOUNDS
+PASS file range outside image: M11_ERR_SEGBOUNDS
+PASS bad alignment: M11_ERR_ALIGN
+PASS segment outside user range: M11_ERR_SEGRANGE
+PASS W+X segment rejected: M11_ERR_FLAGS
+PASS null image pointer: M11_ERR_NULL
+M11 host tests passed.
+grep -q 'M11 host tests passed' build/m11_host_test.log
+[M11] menjalankan audit...
+nm -u build/m11_elf_loader.o > build/m11_nm_undefined.txt
+test ! -s build/m11_nm_undefined.txt
+readelf -h build/m11_elf_loader.o > build/m11_readelf_header.txt
+objdump -dr build/m11_elf_loader.o > build/m11_objdump.txt
+sha256sum build/m11_elf_loader.o \
+    kernel/user/m11_elf_loader.c \
+    include/mcsos/user/m11_elf_loader.h \
+    tests/m11/m11_host_test.c > build/m11_sha256.txt
+grep -q 'ELF64' build/m11_readelf_header.txt
+grep -q 'm11_elf64_plan_load' build/m11_objdump.txt
+[M11][PASS] audit lulus
+[OK] commit: f017f4b
+[PASS] M11 preflight selesai.

@@ -9,6 +9,7 @@
 #include "pmm.h"
 #include "vmm.h"
 #include "mcsos/kmem.h"
+#include "mcsos/user/m11_elf_loader.h"
 #include "mcsos_thread.h"
 #define MCSOS_M10_TEST_INT80 1
 #include "mcsos/syscall.h"
@@ -330,6 +331,70 @@ __attribute__((noreturn)) static void m9_scheduler_idle_loop(void) {
     }
 }
 
+
+static void m11_elf_smoke_test(void) {
+    static unsigned char synthetic_elf[12288];
+    struct m11_elf64_ehdr *eh = (struct m11_elf64_ehdr *)(void *)synthetic_elf;
+    struct m11_elf64_phdr *ph;
+    struct m11_process_image_plan plan;
+    struct m11_user_region region;
+    int rc;
+
+    for (size_t i = 0; i < sizeof(synthetic_elf); i++) {
+        synthetic_elf[i] = 0;
+    }
+
+    eh->e_ident[0] = 0x7fu;
+    eh->e_ident[1] = 'E';
+    eh->e_ident[2] = 'L';
+    eh->e_ident[3] = 'F';
+    eh->e_ident[4] = 2u;
+    eh->e_ident[5] = 1u;
+    eh->e_ident[6] = 1u;
+    eh->e_type      = 2u;
+    eh->e_machine   = 62u;
+    eh->e_version   = 1u;
+    eh->e_entry     = 0x0000000000401000ull;
+    eh->e_phoff     = sizeof(struct m11_elf64_ehdr);
+    eh->e_ehsize    = (uint16_t)sizeof(struct m11_elf64_ehdr);
+    eh->e_phentsize = (uint16_t)sizeof(struct m11_elf64_phdr);
+    eh->e_phnum     = 2u;
+
+    ph = (struct m11_elf64_phdr *)(void *)(synthetic_elf + eh->e_phoff);
+    ph[0].p_type   = 1u;
+    ph[0].p_flags  = 5u;
+    ph[0].p_offset = 0x1000u;
+    ph[0].p_vaddr  = 0x0000000000400000ull;
+    ph[0].p_filesz = 16u;
+    ph[0].p_memsz  = 4096u;
+    ph[0].p_align  = 4096u;
+    ph[1].p_type   = 1u;
+    ph[1].p_flags  = 6u;
+    ph[1].p_offset = 0x2000u;
+    ph[1].p_vaddr  = 0x0000000000401000ull;
+    ph[1].p_filesz = 8u;
+    ph[1].p_memsz  = 4096u;
+    ph[1].p_align  = 4096u;
+
+    region.base  = 0x0000000000400000ull;
+    region.limit = 0x0000008000000000ull;
+
+    rc = m11_elf64_plan_load(synthetic_elf, sizeof(synthetic_elf), region, &plan);
+    if (rc != 0) {
+        log_writeln("[M11] elf: FAIL plan_load returned error");
+        KERNEL_PANIC("M11 elf smoke test failed", (uint64_t)(uint32_t)rc);
+    }
+    log_writeln("[M11] elf: ident ok");
+    log_key_value_hex64("elf_phnum",  (uint64_t)plan.segment_count);
+    log_key_value_hex64("elf_entry",  plan.entry);
+    log_key_value_hex64("seg0_vaddr", plan.segments[0].vaddr);
+    log_key_value_hex64("seg0_flags", (uint64_t)plan.segments[0].flags);
+    log_key_value_hex64("seg1_vaddr", plan.segments[1].vaddr);
+    log_key_value_hex64("seg1_flags", (uint64_t)plan.segments[1].flags);
+    log_writeln("[M11] elf: plan ok");
+    log_writeln("[M11] user image plan ready");
+}
+
 void kmain(void) {
     cpu_cli();
 
@@ -350,6 +415,7 @@ void kmain(void) {
     m8_heap_bootstrap();
     m9_scheduler_bootstrap();
     m10_syscall_bootstrap();
+    m11_elf_smoke_test();
 
 #ifdef MCSOS_M4_TRIGGER_BREAKPOINT
     log_writeln("[M4] triggering intentional breakpoint exception");

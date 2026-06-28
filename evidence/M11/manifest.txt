@@ -1,0 +1,14 @@
+MCSOS M11 evidence manifest
+timestamp_utc=2026-06-28T19:25:56Z
+commit=f017f4b3c5e9aab553996634c4678a2e0f546c33
+clang=Ubuntu clang version 21.1.8 (6ubuntu1)
+lld=Ubuntu LLD 21.1.8 (compatible with GNU linkers)
+qemu=QEMU emulator version 10.2.1 (Debian 1:10.2.1+ds-1ubuntu3)
+m11_host_test.log
+m11_nm_undefined.txt
+m11_objdump.txt
+m11_preflight.log
+m11_qemu_serial.log
+m11_readelf_header.txt
+m11_sha256.txt
+manifest.txt

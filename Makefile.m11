@@ -1,0 +1,57 @@
+CC       ?= clang
+OBJDUMP  ?= objdump
+READELF  ?= readelf
+NM       ?= nm
+SHA256SUM ?= sha256sum
+
+SRCDIR   := kernel/user
+HDRDIR   := include
+TESTDIR  := tests/m11
+BUILDDIR := build
+
+HOST_CFLAGS   := -std=c17 -Wall -Wextra -Werror -O2 -g -I$(HDRDIR)
+TARGET_CFLAGS := --target=x86_64-unknown-none-elf -std=c17 -Wall -Wextra \
+                 -Werror -O2 -ffreestanding -fno-builtin -fno-stack-protector \
+                 -fno-pic -mno-red-zone -I$(HDRDIR) -c
+
+.RECIPEPREFIX := >
+
+.PHONY: all m11-host-test m11-freestanding m11-audit m11-all m11-clean
+
+all: m11-all
+
+m11-all: m11-host-test m11-freestanding m11-audit
+
+m11-host-test: $(BUILDDIR)/m11_host_test
+>$(BUILDDIR)/m11_host_test | tee $(BUILDDIR)/m11_host_test.log
+>grep -q 'M11 host tests passed' $(BUILDDIR)/m11_host_test.log
+
+$(BUILDDIR)/m11_host_test: $(SRCDIR)/m11_elf_loader.c \
+                            $(TESTDIR)/m11_host_test.c \
+                            $(HDRDIR)/mcsos/user/m11_elf_loader.h
+>mkdir -p $(BUILDDIR)
+>$(CC) $(HOST_CFLAGS) $(SRCDIR)/m11_elf_loader.c \
+    $(TESTDIR)/m11_host_test.c -o $@
+
+m11-freestanding: $(BUILDDIR)/m11_elf_loader.o
+
+$(BUILDDIR)/m11_elf_loader.o: $(SRCDIR)/m11_elf_loader.c \
+                               $(HDRDIR)/mcsos/user/m11_elf_loader.h
+>mkdir -p $(BUILDDIR)
+>$(CC) $(TARGET_CFLAGS) $(SRCDIR)/m11_elf_loader.c -o $@
+
+m11-audit: $(BUILDDIR)/m11_elf_loader.o
+>$(NM) -u $(BUILDDIR)/m11_elf_loader.o > $(BUILDDIR)/m11_nm_undefined.txt
+>test ! -s $(BUILDDIR)/m11_nm_undefined.txt
+>$(READELF) -h $(BUILDDIR)/m11_elf_loader.o > $(BUILDDIR)/m11_readelf_header.txt
+>$(OBJDUMP) -dr $(BUILDDIR)/m11_elf_loader.o > $(BUILDDIR)/m11_objdump.txt
+>$(SHA256SUM) $(BUILDDIR)/m11_elf_loader.o \
+    $(SRCDIR)/m11_elf_loader.c \
+    $(HDRDIR)/mcsos/user/m11_elf_loader.h \
+    $(TESTDIR)/m11_host_test.c > $(BUILDDIR)/m11_sha256.txt
+>grep -q 'ELF64' $(BUILDDIR)/m11_readelf_header.txt
+>grep -q 'm11_elf64_plan_load' $(BUILDDIR)/m11_objdump.txt
+>@echo "[M11][PASS] audit lulus"
+
+m11-clean:
+>rm -rf $(BUILDDIR)/m11_* $(BUILDDIR)/m11_host_test
