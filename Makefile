@@ -214,3 +214,37 @@ m9-audit: m9-freestanding
 
 m9-clean:
 >rm -rf $(M9_BUILD)
+
+M10_BUILD := build/m10
+M10_CFLAGS_HOST := -std=c17 -Wall -Wextra -Werror -Iinclude
+M10_CFLAGS_KERNEL := --target=x86_64-unknown-none-elf -std=c17 -ffreestanding -fno-stack-protector -fno-builtin -fno-pic -fno-pie -mno-red-zone -Wall -Wextra -Werror -Iinclude
+M10_ASFLAGS_KERNEL := --target=x86_64-unknown-none-elf -ffreestanding -fno-stack-protector -fno-pic -fno-pie -mno-red-zone
+
+.PHONY: m10-all m10-host-test m10-freestanding m10-audit m10-clean
+
+m10-all: m10-host-test m10-freestanding m10-audit
+
+$(M10_BUILD):
+>mkdir -p $(M10_BUILD)
+
+m10-host-test: $(M10_BUILD)
+>$(CC) $(M10_CFLAGS_HOST) tests/test_syscall_host.c kernel/syscall/syscall.c -o $(M10_BUILD)/test_syscall_host
+>$(M10_BUILD)/test_syscall_host | tee $(M10_BUILD)/test_syscall_host.log
+
+m10-freestanding: $(M10_BUILD)
+>$(CC) $(M10_CFLAGS_KERNEL) -c kernel/syscall/syscall.c -o $(M10_BUILD)/syscall.o
+>$(CC) $(M10_ASFLAGS_KERNEL) -c kernel/syscall/syscall_entry.S -o $(M10_BUILD)/syscall_entry.o
+>$(LD) -r $(M10_BUILD)/syscall.o $(M10_BUILD)/syscall_entry.o -o $(M10_BUILD)/m10_syscall_combined.o
+
+m10-audit: m10-freestanding
+>$(NM) -u $(M10_BUILD)/m10_syscall_combined.o | tee $(M10_BUILD)/nm_undefined.txt
+>$(READELF) -h $(M10_BUILD)/m10_syscall_combined.o | tee $(M10_BUILD)/readelf_header.txt
+>$(OBJDUMP) -dr $(M10_BUILD)/m10_syscall_combined.o > $(M10_BUILD)/objdump.txt
+>sha256sum $(M10_BUILD)/test_syscall_host $(M10_BUILD)/m10_syscall_combined.o | tee $(M10_BUILD)/SHA256SUMS
+>grep -q "Machine:.*Advanced Micro Devices X86-64" $(M10_BUILD)/readelf_header.txt
+>grep -q "x86_64_syscall_int80_stub" $(M10_BUILD)/objdump.txt
+>grep -q "iretq" $(M10_BUILD)/objdump.txt
+>test ! -s $(M10_BUILD)/nm_undefined.txt
+
+m10-clean:
+>rm -rf $(M10_BUILD)

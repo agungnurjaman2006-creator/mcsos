@@ -10,6 +10,10 @@
 #include "vmm.h"
 #include "mcsos/kmem.h"
 #include "mcsos_thread.h"
+#define MCSOS_M10_TEST_INT80 1
+#include "mcsos/syscall.h"
+
+extern void x86_64_syscall_int80_stub(void);
 
 extern char __kernel_start[];
 extern char __kernel_end[];
@@ -230,6 +234,96 @@ static void m9_scheduler_bootstrap(void) {
     log_key_value_hex64("m9_ready_count", (uint64_t)mcsos_sched_ready_count(&g_sched));
 }
 
+static int64_t k_write_serial_bounded(const char *buf, size_t len) {
+    if (len > 256u) {
+        len = 256u;
+    }
+    for (size_t i = 0; i < len; i++) {
+        char c[2];
+        c[0] = buf[i];
+        c[1] = 0;
+        log_write(c);
+    }
+    return (int64_t)len;
+}
+
+static uint64_t k_get_ticks(void) {
+    return x86_64_timer_ticks();
+}
+
+static void k_yield_current(void) {
+    /* mcsos_sched_yield mengembalikan kode error MCSOS_SCHED_*, tapi
+       kontrak mcsos_syscall_ops_t.yield_current adalah void(void).
+       Kegagalan yield (sched belum init, current invalid) sengaja
+       diabaikan di sini -- pemanggil syscall tetap menerima MCSOS_OK
+       selama g_ops.yield_current != NULL, sesuai kontrak M10 bahwa
+       hanya ketersediaan callback yang dicek, bukan hasil internalnya. */
+    (void)mcsos_sched_yield(&g_sched);
+}
+
+static void k_exit_current(int code) {
+    /* M9 belum memiliki thread_exit/teardown stack yang aman (state
+       MCSOS_THREAD_ZOMBIE ada di enum tapi tidak pernah dipakai).
+       Sesuai rekomendasi panduan M10 bagian Langkah 7, exit_current
+       dibuat sebagai stub yang mencatat kode keluar dan memanggil
+       panic terkendali, bukan diam-diam no-op atau melepas stack
+       yang sedang dipakai thread itu sendiri. */
+    log_write("[M10] exit_thread stub called with code=");
+    log_hex64((uint64_t)(int64_t)code);
+    log_writeln("");
+    KERNEL_PANIC("M10 exit_thread stub: M9 has no real thread teardown yet", (uint64_t)(int64_t)code);
+}
+
+static void m10_syscall_bootstrap(void) {
+    mcsos_syscall_ops_t ops = {
+        .get_ticks = k_get_ticks,
+        .yield_current = k_yield_current,
+        .exit_current = k_exit_current,
+        .write_serial = k_write_serial_bounded,
+    };
+    mcsos_syscall_init(&ops);
+
+    static char m10_user_buf[64] = "ping-from-simulated-user-region";
+    mcsos_syscall_set_user_region((mcsos_user_region_t){
+        .base = (uintptr_t)&m10_user_buf[0],
+        .limit = (uintptr_t)&m10_user_buf[0] + sizeof(m10_user_buf),
+    });
+
+    log_writeln("[M10] syscall init");
+
+    int64_t r = mcsos_syscall_dispatch(MCSOS_SYS_PING, 0, 0, 0, 0, 0, 0);
+    if (r != 0x2605020A) {
+        KERNEL_PANIC("M10 syscall ping failed", (uint64_t)r);
+    }
+    log_writeln("[M10] syscall ping ok");
+
+    int64_t ticks = mcsos_syscall_dispatch(MCSOS_SYS_GET_TICKS, 0, 0, 0, 0, 0, 0);
+    if (ticks < 0) {
+        KERNEL_PANIC("M10 syscall get_ticks failed", (uint64_t)ticks);
+    }
+    log_writeln("[M10] syscall get_ticks ok");
+
+    log_writeln("[M10] syscall smoke done");
+
+#ifdef MCSOS_M10_TEST_INT80
+    x86_64_idt_set_gate(0x80, (uint64_t)(uintptr_t)x86_64_syscall_int80_stub, X86_64_IDT_GATE_INTERRUPT);
+    log_writeln("[M10] int 0x80 gate installed");
+
+    long int80_ret;
+    __asm__ volatile (
+        "movq $0, %%rax\n"
+        "int $0x80\n"
+        : "=a"(int80_ret)
+        :
+        : "rcx", "r11", "memory"
+    );
+    if (int80_ret != 0x2605020A) {
+        KERNEL_PANIC("M10 int 0x80 ping mismatch", (uint64_t)int80_ret);
+    }
+    log_writeln("[M10] int 0x80 ping ok");
+#endif
+}
+
 __attribute__((noreturn)) static void m9_scheduler_idle_loop(void) {
     for (;;) {
         mcsos_sched_yield(&g_sched);
@@ -255,6 +349,7 @@ void kmain(void) {
     m7_vmm_init();
     m8_heap_bootstrap();
     m9_scheduler_bootstrap();
+    m10_syscall_bootstrap();
 
 #ifdef MCSOS_M4_TRIGGER_BREAKPOINT
     log_writeln("[M4] triggering intentional breakpoint exception");
