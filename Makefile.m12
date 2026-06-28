@@ -1,0 +1,36 @@
+CC ?= clang
+HOSTCC ?= cc
+NM ?= nm
+READELF ?= readelf
+OBJDUMP ?= objdump
+CFLAGS_COMMON := -std=c17 -Wall -Wextra -Werror -Iinclude
+KERNEL_CFLAGS := $(CFLAGS_COMMON) -target x86_64-elf -ffreestanding -fno-builtin -fno-stack-protector -fno-pic -mno-red-zone -O2
+HOST_CFLAGS := $(CFLAGS_COMMON) -O2 -pthread
+SYNC_SRCS := kernel/sync/lockdep.c kernel/sync/spinlock.c kernel/sync/mutex.c
+BUILD := build/m12
+
+.PHONY: all clean host-test freestanding audit
+
+all: host-test freestanding audit
+
+$(BUILD):
+	mkdir -p $(BUILD)
+
+host-test: $(BUILD)
+	$(HOSTCC) $(HOST_CFLAGS) $(SYNC_SRCS) tests/m12_sync_host_test.c -o $(BUILD)/m12_sync_host_test
+	$(BUILD)/m12_sync_host_test | tee $(BUILD)/host-test.log
+
+freestanding: $(BUILD)
+	$(CC) $(KERNEL_CFLAGS) -c kernel/sync/lockdep.c -o $(BUILD)/lockdep.o
+	$(CC) $(KERNEL_CFLAGS) -c kernel/sync/spinlock.c -o $(BUILD)/spinlock.o
+	$(CC) $(KERNEL_CFLAGS) -c kernel/sync/mutex.c -o $(BUILD)/mutex.o
+
+audit: freestanding
+	$(NM) -u $(BUILD)/lockdep.o $(BUILD)/spinlock.o $(BUILD)/mutex.o | tee $(BUILD)/nm-undefined.txt
+	$(READELF) -h $(BUILD)/lockdep.o | tee $(BUILD)/readelf-lockdep.txt
+	$(OBJDUMP) -d $(BUILD)/spinlock.o | tee $(BUILD)/objdump-spinlock.txt
+	sha256sum $(BUILD)/lockdep.o $(BUILD)/spinlock.o $(BUILD)/mutex.o $(BUILD)/m12_sync_host_test > $(BUILD)/sha256sums.txt
+	@! grep -q ' U ' $(BUILD)/nm-undefined.txt
+
+clean:
+	rm -rf build

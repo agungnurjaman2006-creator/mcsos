@@ -1,0 +1,123 @@
+mkdir -p build/m12
+cc -std=c17 -Wall -Wextra -Werror -Iinclude -O2 -pthread kernel/sync/lockdep.c kernel/sync/spinlock.c kernel/sync/mutex.c tests/m12_sync_host_test.c -o build/m12/m12_sync_host_test
+build/m12/m12_sync_host_test | tee build/m12/host-test.log
+[PASS] M12 synchronization host tests passed
+cc -std=c17 -Wall -Wextra -Werror -Iinclude -target x86_64-elf -ffreestanding -fno-builtin -fno-stack-protector -fno-pic -mno-red-zone -O2 -c kernel/sync/lockdep.c -o build/m12/lockdep.o
+cc: error: unrecognized command-line option ‘-target’
+make: *** [Makefile.m12:24: freestanding] Error 1
+clang -std=c17 -Wall -Wextra -Werror -Iinclude -target x86_64-elf -ffreestanding -fno-builtin -fno-stack-protector -fno-pic -mno-red-zone -O2 -c kernel/sync/lockdep.c -o build/m12/lockdep.o
+clang -std=c17 -Wall -Wextra -Werror -Iinclude -target x86_64-elf -ffreestanding -fno-builtin -fno-stack-protector -fno-pic -mno-red-zone -O2 -c kernel/sync/spinlock.c -o build/m12/spinlock.o
+clang -std=c17 -Wall -Wextra -Werror -Iinclude -target x86_64-elf -ffreestanding -fno-builtin -fno-stack-protector -fno-pic -mno-red-zone -O2 -c kernel/sync/mutex.c -o build/m12/mutex.o
+nm -u build/m12/lockdep.o build/m12/spinlock.o build/m12/mutex.o | tee build/m12/nm-undefined.txt
+
+build/m12/lockdep.o:
+
+build/m12/spinlock.o:
+
+build/m12/mutex.o:
+readelf -h build/m12/lockdep.o | tee build/m12/readelf-lockdep.txt
+ELF Header:
+  Magic:   7f 45 4c 46 02 01 01 00 00 00 00 00 00 00 00 00 
+  Class:                             ELF64
+  Data:                              2's complement, little endian
+  Version:                           1 (current)
+  OS/ABI:                            UNIX - System V
+  ABI Version:                       0
+  Type:                              REL (Relocatable file)
+  Machine:                           Advanced Micro Devices X86-64
+  Version:                           0x1
+  Entry point address:               0x0
+  Start of program headers:          0 (bytes into file)
+  Start of section headers:          816 (bytes into file)
+  Flags:                             0x0
+  Size of this header:               64 (bytes)
+  Size of program headers:           0 (bytes)
+  Number of program headers:         0
+  Size of section headers:           64 (bytes)
+  Number of section headers:         7
+  Section header string table index: 1
+objdump -d build/m12/spinlock.o | tee build/m12/objdump-spinlock.txt
+
+build/m12/spinlock.o:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+0000000000000000 <mcs_spin_init>:
+   0:	55                   	push   %rbp
+   1:	48 89 e5             	mov    %rsp,%rbp
+   4:	48 85 ff             	test   %rdi,%rdi
+   7:	74 0d                	je     16 <mcs_spin_init+0x16>
+   9:	c7 07 00 00 00 00    	movl   $0x0,(%rdi)
+   f:	89 77 04             	mov    %esi,0x4(%rdi)
+  12:	48 89 57 08          	mov    %rdx,0x8(%rdi)
+  16:	5d                   	pop    %rbp
+  17:	c3                   	ret
+  18:	0f 1f 84 00 00 00 00 	nopl   0x0(%rax,%rax,1)
+  1f:	00 
+
+0000000000000020 <mcs_spin_try_lock>:
+  20:	55                   	push   %rbp
+  21:	48 89 e5             	mov    %rsp,%rbp
+  24:	48 85 ff             	test   %rdi,%rdi
+  27:	74 0e                	je     37 <mcs_spin_try_lock+0x17>
+  29:	b8 01 00 00 00       	mov    $0x1,%eax
+  2e:	87 07                	xchg   %eax,(%rdi)
+  30:	85 c0                	test   %eax,%eax
+  32:	0f 94 c0             	sete   %al
+  35:	5d                   	pop    %rbp
+  36:	c3                   	ret
+  37:	31 c0                	xor    %eax,%eax
+  39:	5d                   	pop    %rbp
+  3a:	c3                   	ret
+  3b:	0f 1f 44 00 00       	nopl   0x0(%rax,%rax,1)
+
+0000000000000040 <mcs_spin_lock>:
+  40:	55                   	push   %rbp
+  41:	48 89 e5             	mov    %rsp,%rbp
+  44:	66 66 66 2e 0f 1f 84 	data16 data16 cs nopw 0x0(%rax,%rax,1)
+  4b:	00 00 00 00 00 
+  50:	48 85 ff             	test   %rdi,%rdi
+  53:	74 1d                	je     72 <mcs_spin_lock+0x32>
+  55:	b8 01 00 00 00       	mov    $0x1,%eax
+  5a:	87 07                	xchg   %eax,(%rdi)
+  5c:	85 c0                	test   %eax,%eax
+  5e:	75 12                	jne    72 <mcs_spin_lock+0x32>
+  60:	eb 18                	jmp    7a <mcs_spin_lock+0x3a>
+  62:	66 66 66 66 66 2e 0f 	data16 data16 data16 data16 cs nopw 0x0(%rax,%rax,1)
+  69:	1f 84 00 00 00 00 00 
+  70:	f3 90                	pause
+  72:	8b 07                	mov    (%rdi),%eax
+  74:	85 c0                	test   %eax,%eax
+  76:	75 f8                	jne    70 <mcs_spin_lock+0x30>
+  78:	eb d6                	jmp    50 <mcs_spin_lock+0x10>
+  7a:	5d                   	pop    %rbp
+  7b:	c3                   	ret
+  7c:	0f 1f 40 00          	nopl   0x0(%rax)
+
+0000000000000080 <mcs_spin_unlock>:
+  80:	55                   	push   %rbp
+  81:	48 89 e5             	mov    %rsp,%rbp
+  84:	48 85 ff             	test   %rdi,%rdi
+  87:	74 06                	je     8f <mcs_spin_unlock+0xf>
+  89:	c7 07 00 00 00 00    	movl   $0x0,(%rdi)
+  8f:	5d                   	pop    %rbp
+  90:	c3                   	ret
+  91:	66 66 66 66 66 66 2e 	data16 data16 data16 data16 data16 cs nopw 0x0(%rax,%rax,1)
+  98:	0f 1f 84 00 00 00 00 
+  9f:	00 
+
+00000000000000a0 <mcs_spin_is_locked>:
+  a0:	55                   	push   %rbp
+  a1:	48 89 e5             	mov    %rsp,%rbp
+  a4:	48 85 ff             	test   %rdi,%rdi
+  a7:	74 09                	je     b2 <mcs_spin_is_locked+0x12>
+  a9:	8b 07                	mov    (%rdi),%eax
+  ab:	85 c0                	test   %eax,%eax
+  ad:	0f 95 c0             	setne  %al
+  b0:	5d                   	pop    %rbp
+  b1:	c3                   	ret
+  b2:	31 c0                	xor    %eax,%eax
+  b4:	5d                   	pop    %rbp
+  b5:	c3                   	ret
+sha256sum build/m12/lockdep.o build/m12/spinlock.o build/m12/mutex.o build/m12/m12_sync_host_test > build/m12/sha256sums.txt
