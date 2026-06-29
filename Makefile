@@ -248,3 +248,36 @@ m10-audit: m10-freestanding
 
 m10-clean:
 >rm -rf $(M10_BUILD)
+
+M13_BUILD := build/m13
+M13_CFLAGS_HOST := -std=c17 -Wall -Wextra -Werror -O2 -Iinclude
+M13_CFLAGS_KERNEL := --target=x86_64-unknown-none-elf -std=c17 -ffreestanding -fno-stack-protector -fno-builtin -fno-pic -fno-pie -mno-red-zone -Wall -Wextra -Werror -Iinclude
+
+.PHONY: m13-all m13-host-test m13-freestanding m13-audit m13-clean
+
+m13-all: m13-host-test m13-freestanding m13-audit
+
+$(M13_BUILD):
+>mkdir -p $(M13_BUILD)
+
+m13-host-test: $(M13_BUILD)
+>$(CC) $(M13_CFLAGS_HOST) tests/m13_vfs_host_test.c kernel/vfs/ramfs.c kernel/vfs/fd.c kernel/vfs/sys_vfs.c -o $(M13_BUILD)/m13_vfs_host_test
+>$(M13_BUILD)/m13_vfs_host_test | tee $(M13_BUILD)/m13_vfs_host_test.log
+
+m13-freestanding: $(M13_BUILD)
+>$(CC) $(M13_CFLAGS_KERNEL) -c kernel/vfs/ramfs.c -o $(M13_BUILD)/ramfs.o
+>$(CC) $(M13_CFLAGS_KERNEL) -c kernel/vfs/fd.c -o $(M13_BUILD)/fd.o
+>$(CC) $(M13_CFLAGS_KERNEL) -c kernel/vfs/sys_vfs.c -o $(M13_BUILD)/sys_vfs.o
+>$(LD) -r $(M13_BUILD)/ramfs.o $(M13_BUILD)/fd.o $(M13_BUILD)/sys_vfs.o -o $(M13_BUILD)/m13_vfs_combined.o
+
+m13-audit: m13-freestanding
+>$(NM) -u $(M13_BUILD)/m13_vfs_combined.o | tee $(M13_BUILD)/nm_undefined.txt
+>$(READELF) -h $(M13_BUILD)/m13_vfs_combined.o | tee $(M13_BUILD)/readelf_header.txt
+>$(OBJDUMP) -dr $(M13_BUILD)/m13_vfs_combined.o > $(M13_BUILD)/objdump.txt
+>sha256sum $(M13_BUILD)/m13_vfs_host_test $(M13_BUILD)/m13_vfs_combined.o | tee $(M13_BUILD)/SHA256SUMS
+>grep -q "Machine:.*Advanced Micro Devices X86-64" $(M13_BUILD)/readelf_header.txt
+>grep -q "mcs_ramfs_init" $(M13_BUILD)/objdump.txt
+>test ! -s $(M13_BUILD)/nm_undefined.txt
+
+m13-clean:
+>rm -rf $(M13_BUILD)
