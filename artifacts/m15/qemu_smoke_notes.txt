@@ -1,0 +1,19 @@
+QEMU Smoke Test M15 - Catatan
+=============================
+tools/scripts/run_qemu.sh adalah script lama yang memvalidasi marker boot
+era M3 ("MCSOS 260502 M3 kernel entered"). Kernel saat ini sudah berkembang
+sampai M9/M14 dan mencetak marker "M4 kernel entered" sebagai titik masuk,
+sehingga assertion grep M3 pada script lama tidak lagi valid - ini keterbatasan
+script, bukan regresi kernel.
+
+Verifikasi manual terhadap build/qemu-serial.log (disalin ke qemu_serial.log):
+- Tidak ditemukan kata "panic" di seluruh log.
+- Boot mencapai M4 (IDT), M6 (PMM), dan M9 (scheduler).
+- Scheduler M9 berjalan stabil: thread A/B tick bergantian 264856 kali
+  sebelum proses dihentikan oleh timeout 10s (bukan crash/hang).
+- Kesimpulan: penambahan source MCSFS1 M15 ke repository (fs/mcsfs1/,
+  tests/m15/, Makefile.m15) TIDAK menyebabkan boot regression, karena
+  MCSFS1 M15 belum ditautkan ke kmain (sesuai scope wajib M15: host test
+  + freestanding object audit; integrasi VFS adalah tugas pengayaan).
+- Rekomendasi: perbarui tools/scripts/run_qemu.sh agar mengecek marker
+  boot terbaru, bukan marker M3 yang sudah usang.
