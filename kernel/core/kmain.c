@@ -401,6 +401,7 @@ static mcs_process_t g_m13_process;
 
 
 void m14_block_demo_init(void);
+void m16_kernel_smoke_test(void);
 
 static void m13_vfs_bootstrap(void) {
     mcs_ramfs_init(&g_m13_ramfs);
@@ -468,6 +469,7 @@ void kmain(void) {
     m11_elf_smoke_test();
     m13_vfs_bootstrap();
     m14_block_demo_init();
+    m16_kernel_smoke_test();
 
 #ifdef MCSOS_M4_TRIGGER_BREAKPOINT
     log_writeln("[M4] triggering intentional breakpoint exception");

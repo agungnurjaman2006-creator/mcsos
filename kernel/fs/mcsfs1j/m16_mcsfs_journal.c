@@ -701,3 +701,84 @@ int main(void) {
     return fails == 0 ? 0 : 1;
 }
 #endif
+
+#ifdef MCSOS_M16_KERNEL_INTEGRATION
+#include "mcsos/block.h"
+#include "mcsos/kernel/log.h"
+#include "mcsos/kernel/panic.h"
+
+static struct m16_blockdev g_m16_dev;
+static unsigned char g_m16_storage[M16_BLOCK_SIZE * M16_MAX_BLOCKS];
+static mcsos_blk_device_t g_m16_blk_dev;
+static mcsos_ramblk_t g_m16_ram;
+
+static void m16_sync_to_device(struct m16_blockdev *dev, mcsos_blk_device_t *blk) {
+    for (uint32_t lba = 0; lba < dev->total_blocks; lba++) {
+        (void)mcsos_blk_write(blk, lba, 1u, dev->blocks[lba]);
+    }
+}
+
+static void m16_sync_from_device(struct m16_blockdev *dev, mcsos_blk_device_t *blk) {
+    for (uint32_t lba = 0; lba < dev->total_blocks; lba++) {
+        (void)mcsos_blk_read(blk, lba, 1u, dev->blocks[lba]);
+    }
+}
+
+void m16_kernel_smoke_test(void) {
+    mcsos_blk_status_t st = mcsos_ramblk_init(&g_m16_blk_dev, &g_m16_ram, "ram_m16",
+                                               g_m16_storage, sizeof(g_m16_storage), M16_BLOCK_SIZE);
+    if (st != MCSOS_BLK_OK) {
+        KERNEL_PANIC("M16 ramblk_init failed", (uint64_t)(uint32_t)(int)st);
+    }
+    st = mcsos_blk_register(&g_m16_blk_dev);
+    if (st != MCSOS_BLK_OK) {
+        KERNEL_PANIC("M16 blk_register failed", (uint64_t)(uint32_t)(int)st);
+    }
+    log_writeln("[M16] block device ram_m16 registered");
+
+    m16_dev_init(&g_m16_dev);
+    if (m16_format(&g_m16_dev) != M16_E_OK) {
+        KERNEL_PANIC("M16 format failed", 0u);
+    }
+    m16_sync_to_device(&g_m16_dev, &g_m16_blk_dev);
+    log_writeln("[M16] mcsfs1j format ok");
+
+    if (m16_fsck(&g_m16_dev) != M16_E_OK) {
+        KERNEL_PANIC("M16 fsck after format failed", 0u);
+    }
+    log_writeln("[M16] mcsfs1j fsck after format ok");
+
+    static const uint8_t msg[] = { 'm', 'c', 's', 'o', 's', '-', 'm', '1', '6' };
+    if (m16_write_file(&g_m16_dev, "m16.txt", msg, (uint32_t)sizeof(msg)) != M16_E_OK) {
+        KERNEL_PANIC("M16 write_file failed", 0u);
+    }
+    m16_sync_to_device(&g_m16_dev, &g_m16_blk_dev);
+    log_writeln("[M16] mcsfs1j write_file ok");
+
+    /* Simulasi remount: kosongkan RAM image, hydrate ulang dari block device,
+       lalu jalankan journal recovery + mount seperti kondisi setelah reboot. */
+    m16_dev_init(&g_m16_dev);
+    m16_sync_from_device(&g_m16_dev, &g_m16_blk_dev);
+
+    struct m16_super sb;
+    if (m16_mount(&g_m16_dev, &sb) != M16_E_OK) {
+        KERNEL_PANIC("M16 mount after device sync failed", 0u);
+    }
+    log_writeln("[M16] mcsfs1j mount after device sync ok");
+
+    static uint8_t out[64];
+    uint32_t out_size = 0;
+    if (m16_read_file(&g_m16_dev, "m16.txt", out, sizeof(out), &out_size) != M16_E_OK) {
+        KERNEL_PANIC("M16 read_file failed", 0u);
+    }
+    if (out_size != (uint32_t)sizeof(msg)) {
+        KERNEL_PANIC("M16 read_file size mismatch", (uint64_t)out_size);
+    }
+    log_writeln("[M16] mcsfs1j read_file content verified");
+
+    if (m16_fsck(&g_m16_dev) != M16_E_OK) {
+        KERNEL_PANIC("M16 fsck final failed", 0u);
+    }
+    log_writeln("[M16] mcsfs1j smoke test passed");
+}
+#endif

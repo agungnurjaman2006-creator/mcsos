@@ -23,6 +23,7 @@ COMMON_CFLAGS := --target=x86_64-unknown-none-elf -std=c17 \
     -mno-red-zone -mno-mmx -mno-sse -mno-sse2 -mcmodel=kernel \
     -Wall -Wextra -Werror \
     -Ikernel/arch/x86_64/include -Ikernel/include -Iinclude
+COMMON_CFLAGS += -DMCSOS_M16_KERNEL_INTEGRATION
 
 COMMON_ASFLAGS := --target=x86_64-unknown-none-elf \
     -ffreestanding -fno-pic -fno-pie -m64 -mno-red-zone \
