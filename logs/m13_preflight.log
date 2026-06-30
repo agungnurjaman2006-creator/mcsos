@@ -1,0 +1,17 @@
+== git ==
+/home/agung/src/mcsos
+55a09ab
+?? logs/m13_preflight.log
+
+== tools ==
+GNU bash, version 5.3.9(1)-release (x86_64-pc-linux-gnu)
+cc (Ubuntu 15.2.0-16ubuntu1) 15.2.0
+Ubuntu clang version 21.1.8 (6ubuntu1)
+GNU ld (GNU Binutils for Ubuntu) 2.46
+GNU readelf (GNU Binutils for Ubuntu) 2.46
+GNU objdump (GNU Binutils for Ubuntu) 2.46
+GNU nm (GNU Binutils for Ubuntu) 2.46
+GNU Make 4.4.1
+sha256sum (uutils coreutils) 0.8.0
+QEMU emulator version 10.2.1 (Debian 1:10.2.1+ds-1ubuntu3)
+GNU gdb (Ubuntu 17.1-2ubuntu1) 17.1

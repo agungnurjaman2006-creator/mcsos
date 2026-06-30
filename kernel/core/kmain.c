@@ -11,6 +11,7 @@
 #include "mcsos/kmem.h"
 #include "mcsos/user/m11_elf_loader.h"
 #include "mcsos_thread.h"
+#include "mcs_vfs.h"
 #define MCSOS_M10_TEST_INT80 1
 #include "mcsos/syscall.h"
 
@@ -395,6 +396,52 @@ static void m11_elf_smoke_test(void) {
     log_writeln("[M11] user image plan ready");
 }
 
+static mcs_ramfs_t g_m13_ramfs;
+static mcs_process_t g_m13_process;
+
+static void m13_vfs_bootstrap(void) {
+    mcs_ramfs_init(&g_m13_ramfs);
+    g_m13_process.pid = 1u;
+    mcs_fd_table_init(&g_m13_process.fd_table);
+
+    int rc = mcs_ramfs_seed_file(&g_m13_ramfs, "/motd.txt", (const uint8_t *)"mcsos-m13-ramfs", 15u);
+    if (rc != MCS_OK) {
+        KERNEL_PANIC("M13 seed file failed", (uint64_t)(int64_t)rc);
+    }
+
+    int fd = mcs_sys_open(&g_m13_process, &g_m13_ramfs, "/motd.txt", MCS_O_RDONLY);
+    if (fd < 0) {
+        KERNEL_PANIC("M13 open failed", (uint64_t)(int64_t)fd);
+    }
+
+    char readbuf[16];
+    for (int i = 0; i < 16; i++) { readbuf[i] = 0; }
+    mcs_ssize_t n = mcs_sys_read(&g_m13_process, fd, readbuf, 15u);
+    if (n != 15) {
+        KERNEL_PANIC("M13 read failed", (uint64_t)(int64_t)n);
+    }
+
+    int wfd = mcs_sys_open(&g_m13_process, &g_m13_ramfs, "/log.txt", MCS_O_CREAT | MCS_O_RDWR | MCS_O_TRUNC);
+    if (wfd < 0) {
+        KERNEL_PANIC("M13 create log.txt failed", (uint64_t)(int64_t)wfd);
+    }
+    mcs_ssize_t wn = mcs_sys_write(&g_m13_process, wfd, "boot-ok", 7u);
+    if (wn != 7) {
+        KERNEL_PANIC("M13 write log.txt failed", (uint64_t)(int64_t)wn);
+    }
+
+    if (mcs_sys_close(&g_m13_process, fd) != MCS_OK) {
+        KERNEL_PANIC("M13 close motd.txt failed", 0u);
+    }
+    if (mcs_sys_close(&g_m13_process, wfd) != MCS_OK) {
+        KERNEL_PANIC("M13 close log.txt failed", 0u);
+    }
+
+    log_writeln("[M13] ramfs+vfs smoke test passed");
+    log_write("[M13] motd.txt content: ");
+    log_writeln(readbuf);
+}
+
 void kmain(void) {
     cpu_cli();
 
@@ -416,6 +463,7 @@ void kmain(void) {
     m9_scheduler_bootstrap();
     m10_syscall_bootstrap();
     m11_elf_smoke_test();
+    m13_vfs_bootstrap();
 
 #ifdef MCSOS_M4_TRIGGER_BREAKPOINT
     log_writeln("[M4] triggering intentional breakpoint exception");
