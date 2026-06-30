@@ -1,0 +1,16 @@
+mkdir -p build
+cc -std=c17 -Wall -Wextra -Werror -Iinclude -O2 tests/host/test_m14_block.c kernel/block/block.c kernel/block/ramblk.c kernel/block/bcache.c -o build/test_m14_block
+./build/test_m14_block
+M14 host tests PASS
+mkdir -p build
+clang --target=x86_64-elf -std=c17 -ffreestanding -fno-builtin -fno-stack-protector -fno-pic -mno-red-zone -Wall -Wextra -Werror -Iinclude -O2 -c kernel/block/block.c -o build/block.o
+mkdir -p build
+clang --target=x86_64-elf -std=c17 -ffreestanding -fno-builtin -fno-stack-protector -fno-pic -mno-red-zone -Wall -Wextra -Werror -Iinclude -O2 -c kernel/block/ramblk.c -o build/ramblk.o
+mkdir -p build
+clang --target=x86_64-elf -std=c17 -ffreestanding -fno-builtin -fno-stack-protector -fno-pic -mno-red-zone -Wall -Wextra -Werror -Iinclude -O2 -c kernel/block/bcache.c -o build/bcache.o
+ld -r -o build/m14_block_layer.o build/block.o build/ramblk.o build/bcache.o
+nm -u build/m14_block_layer.o > artifacts/m14_nm_undefined.txt
+readelf -h build/m14_block_layer.o > artifacts/m14_readelf_block.txt
+objdump -dr build/m14_block_layer.o > artifacts/m14_objdump_block.txt
+sha256sum build/block.o build/ramblk.o build/bcache.o build/m14_block_layer.o build/test_m14_block > artifacts/m14_sha256.txt
+test ! -s artifacts/m14_nm_undefined.txt

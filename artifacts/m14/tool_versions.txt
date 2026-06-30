@@ -1,0 +1,11 @@
+Ubuntu clang version 21.1.8 (6ubuntu1)
+Target: x86_64-pc-linux-gnu
+Thread model: posix
+InstalledDir: /usr/lib/llvm-21/bin
+GNU ld (GNU Binutils for Ubuntu) 2.46
+GNU nm (GNU Binutils for Ubuntu) 2.46
+GNU readelf (GNU Binutils for Ubuntu) 2.46
+GNU objdump (GNU Binutils for Ubuntu) 2.46
+GNU Make 4.4.1
+QEMU emulator version 10.2.1 (Debian 1:10.2.1+ds-1ubuntu3)
+Copyright (c) 2003-2025 Fabrice Bellard and the QEMU Project developers
