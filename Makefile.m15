@@ -1,0 +1,36 @@
+CC ?= cc
+CLANG ?= clang
+CFLAGS_HOST := -std=c17 -Wall -Wextra -Werror -I. -O2
+CFLAGS_FREESTANDING := --target=x86_64-elf -std=c17 -ffreestanding -fno-builtin -fno-stack-protector -fno-pic -mno-red-zone -Wall -Wextra -Werror -I. -O2 -c
+SRC := fs/mcsfs1/mcsfs1.c
+OBJ := artifacts/m15/mcsfs1.o
+
+.PHONY: all host-test freestanding audit clean
+
+all: host-test freestanding audit
+
+host-test: artifacts/m15/test_mcsfs1
+	./artifacts/m15/test_mcsfs1 | tee artifacts/m15/host_test.txt
+
+artifacts/m15/test_mcsfs1: tests/m15/test_mcsfs1.c $(SRC) fs/mcsfs1/mcsfs1.h
+	mkdir -p artifacts/m15
+	$(CLANG) $(CFLAGS_HOST) tests/m15/test_mcsfs1.c $(SRC) -o $@
+
+freestanding: $(OBJ)
+
+artifacts/m15/mcsfs1.o: fs/mcsfs1/mcsfs1.c fs/mcsfs1/mcsfs1.h
+	mkdir -p artifacts/m15
+	$(CLANG) $(CFLAGS_FREESTANDING) fs/mcsfs1/mcsfs1.c -o $@
+
+artifacts/m15/mcsfs1.rel.o: artifacts/m15/mcsfs1.o
+	ld -r $< -o $@
+
+audit: artifacts/m15/mcsfs1.rel.o
+	nm -u artifacts/m15/mcsfs1.rel.o | tee artifacts/m15/nm_undefined.txt
+	test ! -s artifacts/m15/nm_undefined.txt
+	readelf -h artifacts/m15/mcsfs1.rel.o | tee artifacts/m15/readelf_header.txt
+	objdump -dr artifacts/m15/mcsfs1.rel.o | tee artifacts/m15/objdump.txt >/dev/null
+	sha256sum artifacts/m15/* | tee artifacts/m15/SHA256SUMS.txt
+
+clean:
+	rm -rf artifacts/m15
