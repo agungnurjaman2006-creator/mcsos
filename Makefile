@@ -282,3 +282,37 @@ m13-audit: m13-freestanding
 
 m13-clean:
 >rm -rf $(M13_BUILD)
+
+# ---------------------------------------------------------------------------
+# Delegasi milestone yang Makefile-nya masih terpisah (Makefile.m11/m12/m14/m15).
+# Sengaja TIDAK pakai `include` langsung: Makefile.m12/m14/m15 memakai nama
+# target generik (all, host-test, freestanding, audit, clean) yang akan
+# saling bentrok kalau di-include bersamaan. Delegasi lewat sub-make ($(MAKE)
+# -f ...) menjaga tiap file tetap terisolasi namespace-nya, sekaligus bisa
+# dipanggil langsung dari root tanpa perlu flag -f manual.
+# ---------------------------------------------------------------------------
+.PHONY: m11-all m11-clean m12-all m12-clean m14-all m14-clean m15-all m15-clean
+
+m11-all:
+>$(MAKE) -f Makefile.m11 m11-all
+
+m11-clean:
+>$(MAKE) -f Makefile.m11 m11-clean
+
+m12-all:
+>$(MAKE) -f Makefile.m12 all
+
+m12-clean:
+>$(MAKE) -f Makefile.m12 clean
+
+m14-all:
+>$(MAKE) -f Makefile.m14 all
+
+m14-clean:
+>$(MAKE) -f Makefile.m14 clean
+
+m15-all:
+>$(MAKE) -f Makefile.m15 all
+
+m15-clean:
+>$(MAKE) -f Makefile.m15 clean
